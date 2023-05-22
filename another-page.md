@@ -2,7 +2,10 @@
 layout: default
 ---
 
-Source code:
+# stack0
+
+Bài này hướng dẫn các bạn cơ bản về stack overflow. Nếu bạn muốn thử, có thể xem qua bài [Setup](./setup.html) để biết thêm về cách thiết lập môi trường.
+Sau đây là source code của chương trình stack0:
 ```c
 #include <stdlib.h>
 #include <unistd.h>
@@ -24,7 +27,7 @@ int main(int argc, char **argv)
 }
 ```
 
-`main` function:
+Khi disassemble hàm `main`, ta được đoạn chương trình sau:
 ```asm
 0x080483f4 <main+0>:    push   ebp
 0x080483f5 <main+1>:    mov    ebp,esp
@@ -45,11 +48,19 @@ int main(int argc, char **argv)
 0x08048433 <main+63>:   leave
 0x08048434 <main+64>:   ret
 ```
-From the asm of `main`, we find that:
-1. `buffer` occupies `esp + 0x1c` until `esp + 0x58`. It is supposed to be 64-byte long.
-2. `modified` occupies `esp + 0x5c`.
 
-So, here are 96 bytes of memory starting at esp, before we input a value for <span style="color:aqua">buffer</span>:
+Khi đọc qua source code và cả asm của `main`, hãy lưu ý nhưng điều sau:
+1. Biến `modified` sẽ được lưu trên stack với địa chỉ `esp + 0x5c`. Biến này có 4 byte.
+2. Biến `buffer` cũng được lưu trên stack từ địa chỉ `esp + 0x1c` cho đến `esp + 0x5b`. Biến này có 64 byte.
+
+Từ 2 lưu ý trên, ta thấy được biến `buffer` và `modified` nằm kề nhau.
+2 biến này sẽ chiếm bộ nhớ từ `esp + 0x1c` cho đến hết `esp + 0x5f`.
+Ở đây, giá trị của biến `buffer`được người dùng quyết định thông qua hàm `gets`.
+Stack overflow sẽ xảy ra khi người dùng nhập giá trị cho `buffer` nhưng lại vượt quá độ dài 64 byte của biến đó.
+Khi đó, phần dư sẽ được lưu đè lên vùng bộ nhớ kế tiếp.
+
+Để dễ tưởng tượng, sau đây là 96 byte bộ nhớ bắt đầu từ địa chỉ `esp`, trước khi người dùng nhập giá trị cho `buffer`.
+Phân biệt theo màu: <span style="color:aqua">buffer</span> và <span style="color:orangered">modified</span>.
 <pre>
 0xbffff740:     0xbffff75c      0x00000001      0xb7fff8f8      0xb7f0186e
 0xbffff750:     0xb7fd7ff4      0xb7ec6165      0xbffff768      <span style="color:aqua">0xb7eada75</span>
