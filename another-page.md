@@ -24,8 +24,8 @@ int main(int argc, char **argv)
 }
 ```
 
-"main" function:
-```assembly
+`main` function:
+```asm
 0x080483f4 <main+0>:    push   ebp
 0x080483f5 <main+1>:    mov    ebp,esp
 0x080483f7 <main+3>:    and    esp,0xfffffff0
@@ -45,18 +45,18 @@ int main(int argc, char **argv)
 0x08048433 <main+63>:   leave
 0x08048434 <main+64>:   ret
 ```
-From the asm of "main", we find that:
+From the asm of `main`, we find that:
 1. `buffer` occupies `esp + 0x1c` until `esp + 0x58`. It is supposed to be 64-byte long.
 2. `modified` occupies `esp + 0x5c`.
 
-So, here are 96 bytes of memory starting at esp, before we input a value for "buffer":
+So, here are 96 bytes of memory starting at esp, before we input a value for <span style="color:aqua">buffer</span>:
 <pre>
 0xbffff740:     0xbffff75c      0x00000001      0xb7fff8f8      0xb7f0186e
 0xbffff750:     0xb7fd7ff4      0xb7ec6165      0xbffff768      <span style="color:aqua">0xb7eada75</span>
 0xbffff760:     <span style="color:aqua">0xb7fd7ff4</span>      <span style="color:aqua">0x08049620</span>      <span style="color:aqua">0xbffff778</span>      <span style="color:aqua">0x080482e8</span>
 0xbffff770:     <span style="color:aqua">0xb7ff1040</span>      <span style="color:aqua">0x08049620</span>      <span style="color:aqua">0xbffff7a8</span>      <span style="color:aqua">0x08048469</span>
 0xbffff780:     <span style="color:aqua">0xb7fd8304</span>      <span style="color:aqua">0xb7fd7ff4</span>      <span style="color:aqua">0x08048450</span>      <span style="color:aqua">0xbffff7a8</span>
-0xbffff790:     <span style="color:aqua">0xb7ec6365</span>      <span style="color:aqua">0xb7ff1040</span>      <span style="color:aqua">0x0804845b</span>      <span style="color:pink">0x00000000</span>
+0xbffff790:     <span style="color:aqua">0xb7ec6365</span>      <span style="color:aqua">0xb7ff1040</span>      <span style="color:aqua">0x0804845b</span>      <span style="color:orangered">0x00000000</span>
 </pre>
 
 and after:
@@ -66,7 +66,7 @@ and after:
 0xbffff760:     <span style="color:aqua">0x42424242</span>      <span style="color:aqua">0x43434343</span>      <span style="color:aqua">0x44444444</span>      <span style="color:aqua">0x45454545</span>
 0xbffff770:     <span style="color:aqua">0x46464646</span>      <span style="color:aqua">0x47474747</span>      <span style="color:aqua">0x48484848</span>      <span style="color:aqua">0x31313131</span>
 0xbffff780:     <span style="color:aqua">0x32323232</span>      <span style="color:aqua">0x33333333</span>      <span style="color:aqua">0x34343434</span>      <span style="color:aqua">0x35353535</span>
-0xbffff790:     <span style="color:aqua">0x36363636</span>      <span style="color:aqua">0x37373737</span>      <span style="color:aqua">0x38383838</span>      <span style="color:pink">0x00000078</span>
+0xbffff790:     <span style="color:aqua">0x36363636</span>      <span style="color:aqua">0x37373737</span>      <span style="color:aqua">0x38383838</span>      <span style="color:orangered">0x00000078</span>
 </pre>
 
 buffer value:
