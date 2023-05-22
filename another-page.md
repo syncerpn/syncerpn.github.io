@@ -25,7 +25,7 @@ int main(int argc, char **argv)
 ```
 
 "main" function:
-```asm
+```assembly
 0x080483f4 <main+0>:    push   ebp
 0x080483f5 <main+1>:    mov    ebp,esp
 0x080483f7 <main+3>:    and    esp,0xfffffff0
@@ -46,8 +46,8 @@ int main(int argc, char **argv)
 0x08048434 <main+64>:   ret
 ```
 From the asm of "main", we find that:
-1. "<span style="color:blue">buffer</span>" occupies esp + 0x1c until esp + 0x58. It is supposed to be 64-byte long.
-2. "<code style="color:green">modified</code>" occupies esp + 0x5c.
+1. `<span style="color:aqua">buffer</span>` occupies `esp + 0x1c` until `esp + 0x58`. It is supposed to be 64-byte long.
+2. `modified` occupies `esp + 0x5c`.
 
 So, here are 96 bytes of memory starting at esp, before we input a value for "buffer":
 <pre>
