@@ -50,6 +50,13 @@ From the asm of "main", we find that:
 2. "<code style="color:green">modified</code>" occupies esp + 0x5c.
 
 So, here are 96 bytes of memory starting at esp, before we input a value for "buffer":
+>0xbffff740:     0xbffff75c      0x00000001      0xb7fff8f8      0xb7f0186e
+>0xbffff750:     0xb7fd7ff4      0xb7ec6165      0xbffff768      <span style="color:blue">0xb7eada75</span>
+>0xbffff760:     <span style="color:blue">0xb7fd7ff4</span>      <span style="color:blue">0x08049620</span>      <span style="color:blue">0xbffff778</span>      <span style="color:blue">0x080482e8</span>
+>xbffff770:     <span style="color:blue">0xb7ff1040</span>      <span style="color:blue">0x08049620</span>      <span style="color:blue">0xbffff7a8</span>      <span style="color:blue">0x08048469</span>
+>xbffff780:     <span style="color:blue">0xb7fd8304</span>      <span style="color:blue">0xb7fd7ff4</span>      <span style="color:blue">0x08048450</span>      <span style="color:blue">0xbffff7a8</span>
+>xbffff790:     <span style="color:blue">0xb7ec6365</span>      <span style="color:blue">0xb7ff1040</span>      <span style="color:blue">0x0804845b</span>      0x00000000
+
 ```text
 0xbffff740:     0xbffff75c      0x00000001      0xb7fff8f8      0xb7f0186e
 0xbffff750:     0xb7fd7ff4      0xb7ec6165      0xbffff768      <span style="color:blue">0xb7eada75</span>
