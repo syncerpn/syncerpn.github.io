@@ -46,8 +46,8 @@ int main(int argc, char **argv)
 0x08048434 <main+64>:   ret
 ```
 From the asm of "main", we find that:
-1. "buffer" occupies esp + 0x1c until esp + 0x58. It is supposed to be 64-byte long.
-2. "modified" occupies esp + 0x5c.
+1. "<span style="color:blue">buffer</span>" occupies esp + 0x1c until esp + 0x58. It is supposed to be 64-byte long.
+2. "<code style="color:green">modified</code>" occupies esp + 0x5c.
 
 So, here are 96 bytes of memory starting at esp, before we input a value for "buffer":
 ```text
