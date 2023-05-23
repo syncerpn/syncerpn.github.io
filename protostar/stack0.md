@@ -1,6 +1,8 @@
 ---
 layout: default
 ---
+layout: post
+---
 
 # stack0
 
