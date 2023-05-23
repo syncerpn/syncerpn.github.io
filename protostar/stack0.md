@@ -1,5 +1,6 @@
 ---
 layout: post
+author: syncer
 ---
 
 # stack0
