@@ -1,3 +1,33 @@
+---
+layout: post
+title: stack1
+---
+```c
+#include <stdlib.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <string.h>
+
+int main(int argc, char **argv)
+{
+  volatile int modified;
+  char buffer[64];
+
+  if(argc == 1) {
+      errx(1, "please specify an argument\n");
+  }
+
+  modified = 0;
+  strcpy(buffer, argv[1]);
+
+  if(modified == 0x61626364) {
+      printf("you have correctly got the variable to the right value\n");
+  } else {
+      printf("Try again, you got 0x%08x\n", modified);
+  }
+}
+```
+
 ```asm
 0x08048464 <main+0>:    push   ebp
 0x08048465 <main+1>:    mov    ebp,esp
@@ -29,4 +59,37 @@
 0x080484d0 <main+108>:  call   0x8048378 <printf@plt>
 0x080484d5 <main+113>:  leave
 0x080484d6 <main+114>:  ret
+```
+
+<pre>
+0xbffff6f0:     0xbffff70c      0xbffff93e      0xb7fff8f8      0xb7f0186e
+0xbffff700:     0xb7fd7ff4      0xb7ec6165      0xbffff718      0xb7eada75
+0xbffff710:     0xb7fd7ff4      0x080496fc      0xbffff728      0x08048334
+0xbffff720:     0xb7ff1040      0x080496fc      0xbffff758      0x08048509
+0xbffff730:     0xb7fd8304      0xb7fd7ff4      0x080484f0      0xbffff758
+0xbffff740:     0xb7ec6365      0xb7ff1040      0x080484fb      0x00000000
+</pre>
+
+<pre>
+0xbffff6f0:     0xbffff70c      0xbffff941      0xb7fff8f8      0xb7f0186e
+0xbffff700:     0xb7fd7ff4      0xb7ec6165      0xbffff718      0x41414141
+0xbffff710:     0x42424242      0x43434343      0x44444444      0x45454545
+0xbffff720:     0x46464646      0x47474747      0x48484848      0x31313131
+0xbffff730:     0x32323232      0x33333333      0x34343434      0x35353535
+0xbffff740:     0x36363636      0x37373737      0x38383838      0x00000078
+</pre>
+
+<pre>
+0xbffff6f0:     0xbffff70c      0xbffff93e      0xb7fff8f8      0xb7f0186e
+0xbffff700:     0xb7fd7ff4      0xb7ec6165      0xbffff718      0x41414141
+0xbffff710:     0x42424242      0x43434343      0x44444444      0x45454545
+0xbffff720:     0x46464646      0x47474747      0x48484848      0x31313131
+0xbffff730:     0x32323232      0x33333333      0x34343434      0x35353535
+0xbffff740:     0x36363636      0x37373737      0x38383838      0x61626364
+</pre>
+
+## Ref
+```bash
+user@protostar:~$ stack1 AAAABBBBCCCCDDDDEEEEFFFFGGGGHHHH11112222333344445555666677778888dcba
+you have correctly got the variable to the right value
 ```
