@@ -6,5 +6,11 @@ layout: default
 
 | stack | format | heap | net | final|
 |:-|:-|:-|:-|:-|
-| [stack0](./protostar/stack0.html) | x | x | x | x |
-| x | x | x | x | x |
+| [stack0](./protostar/stack0.html) | [format0](./protostar/format0.html) | [heap0](./protostar/heap0.html) | [net0](./protostar/net0.html) | [final0](./protostar/final0.html) |
+| [stack1](./protostar/stack1.html) | [format1](./protostar/format1.html) | [heap1](./protostar/heap1.html) | [net1](./protostar/net1.html) | [final1](./protostar/final1.html) |
+| [stack2](./protostar/stack2.html) | [format2](./protostar/format2.html) | [heap2](./protostar/heap2.html) | [net2](./protostar/net2.html) | [final2](./protostar/final2.html) |
+| [stack3](./protostar/stack3.html) | [format3](./protostar/format3.html) | [heap3](./protostar/heap3.html) |   |   |
+| [stack4](./protostar/stack4.html) | [format4](./protostar/format4.html) |   |   |   |
+| [stack5](./protostar/stack5.html) |   |   |   |   |
+| [stack6](./protostar/stack6.html) |   |   |   |   |
+| [stack7](./protostar/stack7.html) |   |   |   |   |
