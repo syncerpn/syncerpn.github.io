@@ -1,10 +1,7 @@
 ---
 layout: post
-author: syncer
+title: stack0
 ---
-
-# stack0
-
 Bài này hướng dẫn các bạn cơ bản về stack overflow. Nếu bạn muốn thử, có thể xem qua bài [Setup](./setup.html) để biết thêm về cách thiết lập môi trường.
 Sau đây là source code của chương trình stack0:
 ```c
@@ -96,4 +93,3 @@ user@protostar:~$ python -c "print 'AAAABBBBCCCCDDDDEEEEFFFFGGGGHHHH111122223333
 user@protostar:~$ stack0 < input.txt
 you have changed the 'modified' variable
 ```
-[back](./)
