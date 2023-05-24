@@ -14,8 +14,8 @@ $container-max-width: 1200px;
   }
 }
 
-html {
-  overflow-y: scroll;
+::-webkit-scrollbar {
+    display: none;
 }
 
 body {
