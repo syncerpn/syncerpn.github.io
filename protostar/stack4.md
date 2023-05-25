@@ -54,7 +54,6 @@ Phân biệt theo màu: <span style="color:aqua">esp</span> và <span style="col
 <pre class="memory">
 <span style="color:orangered">0x08048418</span> <main+16>:   call   0x804830c <gets@plt>
 0x0804841d <main+21>:   leave
-
 ...
 0xbffff748:     0xb7fff8f8
 0xbffff74c:     0xb7f0186e
