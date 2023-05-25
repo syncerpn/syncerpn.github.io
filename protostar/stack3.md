@@ -69,7 +69,7 @@ Sau đây là asm code của `main` và `win`:
 Áp dụng kỹ thuật tương tự như 3 bài trước, chúng ta sẽ nhập 68 byte cho `buffer`, trong đó 4 byte cuối có giá trị bằng với địa chỉ của `win`.
 Địa chỉ của hàm `win` là `0x08048424`.
 Trước khi nhập vào, bộ nhớ sẽ như sau.
-Phân biệt theo màu: <span style="color:aqua">buffer</span> và <span style="color:orangered">modified</span>.
+Phân biệt theo màu: <span style="color:aqua">buffer</span> và <span style="color:orangered">fp</span>.
 <pre class="memory">
 0xbffff740:     0xbffff75c      0x00000001      0xb7fff8f8      0xb7f0186e
 0xbffff750:     0xb7fd7ff4      0xb7ec6165      0xbffff768      <span style="color:aqua">0xb7eada75</span>
