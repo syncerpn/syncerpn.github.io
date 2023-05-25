@@ -118,9 +118,9 @@ stack4 < input.txt
 </pre>
 
 Lời giải này giả thiết chúng ta không biết về padding.
-Trên thực ta, ta có thể dùng gdb để kiểm tra độ dài này.
+Trên thực tế, ta có thể dùng gdb để kiểm tra độ dài này.
 Cụ thể, độ dài này sẽ nên là 8 byte thay vì 12 byte.
-Để 12 byte sẽ khiến chương trình lưu thêm 1 lần địa chỉ của `win` vào phía sau, dẫn dến 2 lần thực thi hàm `win` này.
+Dùng 12 byte sẽ khiến chương trình lưu thêm 1 lần địa chỉ của `win` vào phía sau, dẫn dến 2 lần thực thi hàm `win` này.
 Bạn có thể xem kết quả chạy ở cuối bài viết.
 
 ## Ref
