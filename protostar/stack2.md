@@ -80,7 +80,7 @@ Cụ thể, biến `modified` chiếm 4 byte, bắt đầu từ `esp + 0x58`, c�
 Để dễ tưởng tượng, sau đây là 96 byte bộ nhớ bắt đầu từ địa chỉ `esp`, trước khi `variable` nhận giá trị từ environment variable.
 Trong ví dụ này, environment variable có giá trị là `"hello"`, tương đương với chuỗi byte `0x68` `0x65` `0x6c` `0x6c` `0x6f`.
 Phân biệt theo màu: <span style="color:aqua">buffer</span>, <span style="color:orangered">modified</span>, và <span style="color:yellow">modified</span>.
-<pre style="color:darkgrey">
+<pre style="color:dimgrey">
 0xbffff730:     0x080485e0      0x00000001      0xb7fff8f8      0xb7f0186e
 0xbffff740:     0xb7fd7ff4      0xb7ec6165      <span style="color:aqua">0xbffff758</span>      <span style="color:aqua">0xb7eada75</span>
 0xbffff750:     <span style="color:aqua">0xb7fd7ff4</span>      <span style="color:aqua">0x08049748</span>      <span style="color:aqua">0xbffff768</span>      <span style="color:aqua">0x08048358</span>
@@ -91,7 +91,7 @@ Phân biệt theo màu: <span style="color:aqua">buffer</span>, <span style="col
 <span style="color:yellow">0xbffff9ec</span>:      "hello"
 </pre>
 
-<pre>
+<pre style="color:dimgrey">
 0xbffff730:     0xbffff748      0xbffff9ec      0xb7fff8f8      0xb7f0186e
 0xbffff740:     0xb7fd7ff4      0xb7ec6165      <span style="color:aqua">0x6c6c6568</span>      <span style="color:aqua">0xb7ea006f</span>
 0xbffff750:     <span style="color:aqua">0xb7fd7ff4</span>      <span style="color:aqua">0x08049748</span>      <span style="color:aqua">0xbffff768</span>      <span style="color:aqua">0x08048358</span>
@@ -107,7 +107,7 @@ Giá trị của `modified` sẽ được sửa thành `0x0d0a0d0a`.
 Sau đây là bộ nhớ sau `strcpy`.
 (`esp` có thể thay đổi tùy theo environment variable `"GREENIE"` thay đổi, nhưng các offset từ `esp` để tìm ra đúng biến thì giữ nguyên.)
 
-<pre>
+<pre style="color:dimgrey">
 0xbffff6f0:     0xbffff708      0xbffff9ad      0xb7fff8f8      0xb7f0186e
 0xbffff700:     0xb7fd7ff4      0xb7ec6165      <span style="color:aqua">0x41414141</span>      <span style="color:aqua">0x42424242</span>
 0xbffff710:     <span style="color:aqua">0x43434343</span>      <span style="color:aqua">0x44444444</span>      <span style="color:aqua">0x45454545</span>      <span style="color:aqua">0x46464646</span>
