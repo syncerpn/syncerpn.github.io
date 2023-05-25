@@ -52,8 +52,9 @@ Khi hàm con return về hàm đã gọi nó, địa chỉ này sẽ được `p
 Ví dụ, hãy cùng xem stack ngay trước vào khi gọi hàm `gets` trong `main` của chương trình stack4.
 Phân biệt theo màu: <span style="color:aqua">esp</span> và <span style="color:orangered">eip</span>.
 <pre class="memory">
-<span style="color:orangered">0x8048418</span>:    call   0x804830c
-0x804841d:    leave
+<span style="color:orangered">0x08048418</span> <main+16>:   call   0x804830c <gets@plt>
+0x0804841d <main+21>:   leave
+
 ...
 0xbffff748:     0xb7fff8f8
 0xbffff74c:     0xb7f0186e
@@ -62,7 +63,7 @@ Phân biệt theo màu: <span style="color:aqua">esp</span> và <span style="col
 </pre>
 Ngay sau khi lệnh `call` được thực thi.
 <pre class="memory">
-<span style="color:orangered">0x804830c</span>:   jmp    DWORD PTR ds:0x80495fc
+<span style="color:orangered">0x0804830c</span> <gets@plt+0>:        jmp    DWORD PTR ds:0x80495fc
 ...
 0xbffff748:     0xb7fff8f8
 <span style="color:aqua">0xbffff74c</span>:     0x0804841d
@@ -116,6 +117,12 @@ stack4 < input.txt
 0xbffff7a0:     <span style="color:orangered">0x080483f4</span>      <span style="color:orangered">0x080483f4</span>      <span style="color:orangered">0x080483f4</span>      <span style="color:orangered">0x080483f4</span>
 0xbffff7b0:     <span style="color:orangered">0x080483f4</span>      0xbffff800      0xbffff85c      0xb7fe1848
 </pre>
+
+Lời giải này giả thiết chúng ta không biết về padding.
+Trên thực ta, ta có thể dùng gdb để kiểm tra độ dài này.
+Cụ thể, độ dài này sẽ nên là 8 byte thay vì 12 byte.
+Để 12 byte sẽ khiến chương trình lưu thêm 1 lần địa chỉ của `win` vào phía sau, dẫn dến 2 lần thực thi hàm `win` này.
+Bạn có thể xem kết quả chạy ở cuối bài viết.
 
 ## Ref
 ```bash
