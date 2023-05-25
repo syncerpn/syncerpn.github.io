@@ -3,4 +3,4 @@ description: youtube.com/@syncer
 show_downloads: false
 google_analytics:
 theme: jekyll-theme-hacker
-highlighter: rouge
+highlighter: prism
