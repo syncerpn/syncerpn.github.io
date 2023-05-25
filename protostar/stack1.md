@@ -74,7 +74,7 @@ Chỉ cần tham số này vượt quá 64 byte, giá trị của `modified` cũ
 
 Để dễ tưởng tượng, sau đây là 96 byte bộ nhớ bắt đầu từ địa chỉ `esp`, trước khi người dùng nhập giá trị cho `buffer`.
 Phân biệt theo màu: <span style="color:aqua">buffer</span> và <span style="color:orangered">modified</span>.
-<pre>
+<pre style="color:dimgrey">
 0xbffff6f0:     0xbffff70c      0xbffff93e      0xb7fff8f8      0xb7f0186e
 0xbffff700:     0xb7fd7ff4      0xb7ec6165      0xbffff718      <span style="color:aqua">0xb7eada75</span>
 0xbffff710:     <span style="color:aqua">0xb7fd7ff4</span>      <span style="color:aqua">0x080496fc</span>      <span style="color:aqua">0xbffff728</span>      <span style="color:aqua">0x08048334</span>
@@ -90,7 +90,7 @@ Sau đây là bộ nhớ sau `strcpy`.
 stack1 "AAAABBBBCCCCDDDDEEEEFFFFGGGGHHHH11112222333344445555666677778888x"
 ```
 
-<pre>
+<pre style="color:dimgrey">
 0xbffff6f0:     0xbffff70c      0xbffff941      0xb7fff8f8      0xb7f0186e
 0xbffff700:     0xb7fd7ff4      0xb7ec6165      0xbffff718      <span style="color:aqua">0x41414141</span>
 0xbffff710:     <span style="color:aqua">0x42424242</span>      <span style="color:aqua">0x43434343</span>      <span style="color:aqua">0x44444444</span>      <span style="color:aqua">0x45454545</span>
@@ -109,7 +109,7 @@ stack1 "AAAABBBBCCCCDDDDEEEEFFFFGGGGHHHH11112222333344445555666677778888dcba"
 
 Đi kèm với đó là bộ nhớ sau `strcpy` để bạn dễ tưởng tượng.
 
-<pre>
+<pre style="color:dimgrey">
 0xbffff6f0:     0xbffff70c      0xbffff93e      0xb7fff8f8      0xb7f0186e
 0xbffff700:     0xb7fd7ff4      0xb7ec6165      0xbffff718      <span style="color:aqua">0x41414141</span>
 0xbffff710:     <span style="color:aqua">0x42424242</span>      <span style="color:aqua">0x43434343</span>      <span style="color:aqua">0x44444444</span>      <span style="color:aqua">0x45454545</span>
