@@ -59,7 +59,7 @@ Khi đó, phần dư sẽ được lưu đè lên vùng bộ nhớ kế tiếp.
 
 Để dễ tưởng tượng, sau đây là 96 byte bộ nhớ bắt đầu từ địa chỉ `esp`, trước khi người dùng nhập giá trị cho `buffer`.
 Phân biệt theo màu: <span style="color:aqua">buffer</span> và <span style="color:orangered">modified</span>.
-<pre style="color:dimgrey">
+<pre class="memory">
 0xbffff740:     0xbffff75c      0x00000001      0xb7fff8f8      0xb7f0186e
 0xbffff750:     0xb7fd7ff4      0xb7ec6165      0xbffff768      <span style="color:aqua">0xb7eada75</span>
 0xbffff760:     <span style="color:aqua">0xb7fd7ff4</span>      <span style="color:aqua">0x08049620</span>      <span style="color:aqua">0xbffff778</span>      <span style="color:aqua">0x080482e8</span>
@@ -78,7 +78,7 @@ stack0 < input.txt
 
 Phần chuỗi `"AAAABBBBCCCCDDDDEEEEFFFFGGGGHHHH11112222333344445555666677778888"` sẽ chiếm hết 64 byte của `buffer`. `"x"`, tương đương `0x78` sẽ được dành cho `modified`.
 Thay đổi trên bộ nhớ có thể thấy được như sau:
-<pre style="color:dimgrey">
+<pre class="memory">
 0xbffff740:     0xbffff75c      0x00000001      0xb7fff8f8      0xb7f0186e
 0xbffff750:     0xb7fd7ff4      0xb7ec6165      0xbffff768      <span style="color:aqua">0x41414141</span>
 0xbffff760:     <span style="color:aqua">0x42424242</span>      <span style="color:aqua">0x43434343</span>      <span style="color:aqua">0x44444444</span>      <span style="color:aqua">0x45454545</span>
