@@ -37,7 +37,7 @@ int main(int argc, char **argv)
 ```
 
 Khi disassemble hàm `main`, ta được đoạn chương trình sau:
-```nasm
+```asm
 0x08048494 <main+0>:    push   ebp
 0x08048495 <main+1>:    mov    ebp,esp
 0x08048497 <main+3>:    and    esp,0xfffffff0
