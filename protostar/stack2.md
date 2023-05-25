@@ -3,7 +3,7 @@ layout: post
 title: stack2
 ---
 stack2 cũng tương tự như stack0 và stack1.
-Trong bài này, chúng ta tiếp tục sử dụng phương thức lưu đè vùng bộ nhớ của biến khác khi hàm `strcpy` được sử dụng.
+Trong bài này, chúng ta tiếp tục sử dụng phương thức lưu đè vùng bộ nhớ của biến khác bằng hàm `strcpy`.
 Source code của stack2 như sau:
 ```c
 #include <stdlib.h>
@@ -79,7 +79,7 @@ Cụ thể, biến `modified` chiếm 4 byte, bắt đầu từ `esp + 0x58`, c�
 
 Để dễ tưởng tượng, sau đây là 96 byte bộ nhớ bắt đầu từ địa chỉ `esp`, trước khi `variable` nhận giá trị từ environment variable.
 Trong ví dụ này, environment variable có giá trị là `"hello"`, tương đương với chuỗi byte `0x68` `0x65` `0x6c` `0x6c` `0x6f`.
-Phân biệt theo màu: <span style="color:aqua">buffer</span>, <span style="color:orangered">modified</span>, và <span style="color:orangered">modified</span>.
+Phân biệt theo màu: <span style="color:aqua">buffer</span>, <span style="color:orangered">modified</span>, và <span style="color:yellow">modified</span>.
 <pre>
 0xbffff730:     0x080485e0      0x00000001      0xb7fff8f8      0xb7f0186e
 0xbffff740:     0xb7fd7ff4      0xb7ec6165      <span style="color:aqua">0xbffff758</span>      <span style="color:aqua">0xb7eada75</span>
@@ -103,7 +103,7 @@ Phân biệt theo màu: <span style="color:aqua">buffer</span>, <span style="col
 </pre>
 
 Để exploit được chương trình, ta sẽ gán 68 byte giá trị cho environment variable `"GREENIE"` là `"AAAABBBBCCCCDDDDEEEEFFFFGGGGHHHH11112222333344445555666677778888\x0a\x0d\x0a\x0d"`.
-Nếu sử dụng input như bài trước, ta sẽ sửa được giá trị của `modified` thành `0x0d0a0d0a`.
+Giá trị của `modified` sẽ được sửa thành `0x0d0a0d0a`.
 Sau đây là bộ nhớ sau `strcpy`.
 (`esp` có thể thay đổi tùy theo environment variable `"GREENIE"` thay đổi, nhưng các offset từ `esp` để tìm ra đúng biến thì giữ nguyên.)
 
@@ -119,7 +119,7 @@ Sau đây là bộ nhớ sau `strcpy`.
 </pre>
 
 Cũng lưu ý thêm, biến `variable` có 1 byte đầu tiên bị ảnh hưởng do chuỗi nhập vào là kiểu null-terminated.
-Giá trị mong đợi của nó là `0xbffff9ad`.
+Giá trị mong đợi của nó là `0xbffff9ad`, thay vì `0xbffff900`.
 
 ## Ref
 ```bash
