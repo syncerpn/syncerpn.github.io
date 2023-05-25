@@ -102,10 +102,10 @@ Phân biệt theo màu: <span style="color:aqua">buffer</span>, <span style="col
 <span style="color:yellow">0xbffff9ec</span>:     0x6c6c6568      0x4f4c006f      0x4d414e47      0x73753d45
 </pre>
 
-Để exploit được chương trình, ta sẽ gán 68 byte giá trị cho environment variable `"GREENIE"` là `"AAAABBBBCCCCDDDDEEEEFFFFGGGGHHHH11112222333344445555666677778888\0x0d0a0d0a"`
-Nếu sử dụng input như bài trước, ta sẽ sửa được giá trị của `modified` thành `0x00000078`.
+Để exploit được chương trình, ta sẽ gán 68 byte giá trị cho environment variable `"GREENIE"` là `"AAAABBBBCCCCDDDDEEEEFFFFGGGGHHHH11112222333344445555666677778888\x0a\x0d\x0a\x0d"`.
+Nếu sử dụng input như bài trước, ta sẽ sửa được giá trị của `modified` thành `0x0d0a0d0a`.
 Sau đây là bộ nhớ sau `strcpy`.
-(`esp` có thể thay đổi tùy khi environment variable `"GREENIE"` thay đổi, nhưng các offset từ `esp` để tìm ra đúng biến thì giữ nguyên.)
+(`esp` có thể thay đổi tùy theo environment variable `"GREENIE"` thay đổi, nhưng các offset từ `esp` để tìm ra đúng biến thì giữ nguyên.)
 
 <pre>
 0xbffff6f0:     0xbffff708      0xbffff9ad      0xb7fff8f8      0xb7f0186e
