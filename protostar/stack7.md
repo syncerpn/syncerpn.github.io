@@ -107,7 +107,7 @@ Giá trị này bao gồm 64 byte mong đợi của `buffer`, trong đó 36 byte
 4 byte tiếp theo dành cho `ebp` của caller.
 4 byte cuối cùng là địa chỉ phù hợp, `0x080484bf`, để ghi đè `eip` của caller và điều hướng chương trình về lệnh `call eax`.
 Sau đây là bộ nhớ trước và sau hàm `gets`.
-Phân biệt <span style="color:aqua">buffer</span> và <span style="color:orangered">eip mới của caller</span>.
+Phân biệt <span style="color:aqua">buffer</span>, <span style="color:orangered">eip mới của caller</span>, và <span style="color:springgreen">injected code</span>.
 <pre class="memory">
 0xbffff710:     0xbffff72c      0x00000000      0xb7fe1b28      0x00000001
 0xbffff720:     0x00000000      0x00000001      0xb7fff8f8      <span style="color:aqua">0xb7f0186e</span>
@@ -132,7 +132,7 @@ Sau đây là chuỗi chương trình được ghép lại để bạn dễ hìn
 ...
 0x08048543 <getpath+127>:       leave
 0x08048544 <getpath+128>:       ret
-<span style="color:orangered">0x80484bf <frame_dummy+31>:     call   eax</span>
+<span style="color:orangered">0x080484bf <frame_dummy+31>:     call   eax</span>
 <span style="color:springgreen">0x????????:     nop</span>
 <span style="color:springgreen">0x????????:     nop</span>
 <span style="color:springgreen">0x????????:     nop</span>
