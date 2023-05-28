@@ -145,7 +145,7 @@ Sau đây là ví dụ sử dụng hàm `system` trong libc để chạy các ch
 (gdb) print system
 ```
 Hàm `system` cần thêm tham số là pointer đến chuỗi ký tự lệnh.
-Ví dụ, nếu muốn chạy "/bin/sh", ta cần cung cấp địa chỉ của chuỗi này cho hàm `system`
+Ví dụ, nếu muốn chạy "/bin/sh", ta cần cung cấp địa chỉ của chuỗi này cho hàm `system`.
 Để tìm được địa chỉ chuỗi này, ta có thể dùng lệnh bash sau:
 ```bash
 strings -a -t x /lib/libc-2.11.2.so | grep "/bin/sh"
@@ -155,7 +155,7 @@ Muốn tìm địa chỉ của libc khi process đang chạy, hãy dùng lệnh 
 ```bash
 (gdb) info proc map
 ```
-Ta nhận được địa chỉ của libc nằm tại `0xb7e97000`
+Ta nhận được địa chỉ của libc nằm tại `0xb7e97000`.
 Kết hợp offset và địa chỉ, chuỗi "/bin/sh" có thể tìm thấy tại `0xb7fb63bf`.
 Sau cùng, giá trị `buffer` để làm tràn và exploit chương trình sẽ như sau:
 ```bash
