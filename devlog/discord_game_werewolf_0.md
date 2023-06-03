@@ -26,17 +26,17 @@ The Villagers will go to sleep at night.
 
 The Seer can check the role of 1 person that she wants.
 <pre class="memory">
-<span style="color:aqua">!check</span> <id>
+<span style="color:aqua">!check</span> [id]
 </pre>
 
 The Guard can protect 1 person that he wants.
 <pre class="memory">
-<span style="color:aqua">!protect</span> <id>
+<span style="color:aqua">!protect</span> [id]
 </pre>
 
 The Werewolves will discuss and vote to kill 1 person.
 <pre class="memory">
-<span style="color:aqua">!kill</span> <id>
+<span style="color:aqua">!kill</span> [id]
 </pre>
 
 You can also cancel your move.
@@ -62,7 +62,7 @@ Be aware that the Werewolves will probably lie.
 Or everybody skips this turn.
 
 <pre class="memory">
-<span style="color:aqua">!vote</span> <id>
+<span style="color:aqua">!vote</span> [id]
 </pre>
 
 ### Next night, next next day, and more
