@@ -14,3 +14,6 @@ layout: default
 | [stack5](./protostar/stack5.html) |   |   |   |   |
 | [stack6](./protostar/stack6.html) |   |   |   |   |
 | [stack7](./protostar/stack7.html) |   |   |   |   |
+
+# Discord game BOT
+[werewolf devlog #0](./devlog/discord_game_werewolf_0.html)
