@@ -8,37 +8,6 @@ $blockquote-color: $silver-chalice !default;
 $blockquote-border: $dove-grey !default;
 $container-max-width: 1200px;
 
-@font-face {
-font-family: 'gg sans Bold';
-font-style: normal;
-font-weight: normal;
-src: local('gg sans Bold'), url('../../_sass/gg sans Bold.woff') format('woff');
-}
-
-
-@font-face {
-font-family: 'gg sans Normal Regular';
-font-style: normal;
-font-weight: normal;
-src: local('gg sans Normal Regular'), url('../../_sass/gg sans Regular.woff') format('woff');
-}
-
-
-@font-face {
-font-family: 'gg sans Medium Regular';
-font-style: normal;
-font-weight: normal;
-src: local('gg sans Medium Regular'), url('../../_sass/gg sans Medium.woff') format('woff');
-}
-
-
-@font-face {
-font-family: 'gg sans SemiBold Regular';
-font-style: normal;
-font-weight: normal;
-src: local('gg sans SemiBold Regular'), url('../../_sass/gg sans Semibold.woff') format('woff');
-}
-
 @mixin media-max-width($max-width) {
   @media (max-width: $max-width) {
       @content;
