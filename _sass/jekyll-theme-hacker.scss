@@ -8,6 +8,37 @@ $blockquote-color: $silver-chalice !default;
 $blockquote-border: $dove-grey !default;
 $container-max-width: 1200px;
 
+@font-face {
+font-family: 'gg sans Bold';
+font-style: normal;
+font-weight: normal;
+src: local('gg sans Bold'), url('gg sans Bold.woff') format('woff');
+}
+
+
+@font-face {
+font-family: 'gg sans Normal Regular';
+font-style: normal;
+font-weight: normal;
+src: local('gg sans Normal Regular'), url('gg sans Regular.woff') format('woff');
+}
+
+
+@font-face {
+font-family: 'gg sans Medium Regular';
+font-style: normal;
+font-weight: normal;
+src: local('gg sans Medium Regular'), url('gg sans Medium.woff') format('woff');
+}
+
+
+@font-face {
+font-family: 'gg sans SemiBold Regular';
+font-style: normal;
+font-weight: normal;
+src: local('gg sans SemiBold Regular'), url('gg sans Semibold.woff') format('woff');
+}
+
 @mixin media-max-width($max-width) {
   @media (max-width: $max-width) {
       @content;
@@ -29,7 +60,7 @@ body {
   color: $body-foreground;
   font-size: 16px;
   line-height: 1.5;
-  font-family: "gg sans", "Noto Sans", "Roboto Mono", monospace;
+  font-family: "gg sans SemiBold Regular", "Roboto Mono", monospace;
 }
 
 /* General & 'Reset' Stuff */
@@ -72,7 +103,7 @@ header h1 {
   line-height: 1.5;
   margin: 0 0 0 -40px;
   font-weight: bold;
-  font-family: "Roboto Mono", monospace;
+  font-family: "gg sans SemiBold Regular", "Roboto Mono", monospace;
   color: $conifer;//$header;
   text-shadow: 0 1px 1px rgba(0, 0, 0, 0.1),
                0 0 5px rgba(181, 232, 83, 0.1),
@@ -177,6 +208,7 @@ pre {
   word-wrap: normal;
   overflow: auto;
   overflow-y: hidden;
+  font-family: "Roboto Mono", monospace;
 }
 
 code.highlighter-rouge {
