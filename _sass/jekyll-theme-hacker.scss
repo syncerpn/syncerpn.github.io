@@ -60,7 +60,7 @@ body {
   color: $body-foreground;
   font-size: 16px;
   line-height: 1.5;
-  font-family: "gg sans SemiBold Regular", "Roboto Mono", monospace;
+  font-family: "gg sans SemiBold Regular";
 }
 
 /* General & 'Reset' Stuff */
@@ -146,7 +146,7 @@ section img {
 
 h1, h2, h3, h4, h5, h6 {
   font-weight: normal;
-  font-family: "Roboto Mono", monospace;
+  font-family: "gg sans SemiBold Regular", "Roboto Mono", monospace;
   color: $header;
   letter-spacing: -0.03em;
   text-shadow: 0 1px 1px rgba(0, 0, 0, 0.1),
@@ -208,6 +208,10 @@ pre {
   word-wrap: normal;
   overflow: auto;
   overflow-y: hidden;
+  font-family: "Roboto Mono", monospace;
+}
+
+span {
   font-family: "Roboto Mono", monospace;
 }
 
