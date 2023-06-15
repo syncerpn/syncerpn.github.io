@@ -65,8 +65,9 @@ int main(int argc, char **argv)
 Hàm đầu tiên được xem xét trong bài này là `sprintf`. Hàm này có tham số đầu tiên là một biến (pointer), tiếp theo là một formatted string, theo sau đó là các tham số để thay vào formatted string. `sprintf` hoạt động bằng cách phân tích formatted string đưa vào, sau đó sinh ra một chuỗi mới sẽ được lưu vào biến tham số.
 
 Tương tự như trong các bài về exploit stack trước đây.
-1. Biến `target` được lưu trên stack với địa chỉ `ebp-0xc`. Biến này có 4 byte.
-2. Biến `buffer` được lưu trên stack với địa chỉ `ebp-0x4c`. Biến này có 64 byte.
+1. Biến `target` được lưu trên stack với địa chỉ `ebp - 0xc`. Biến này có 4 byte.
+2. Biến `buffer` được lưu trên stack với địa chỉ `ebp - 0x4c`. Biến này có 64 byte.
+
 2 biến này lắm kề này trên stack. Do đó, về cơ bản, chúng ta sẽ cần một formatted string có thể sinh ra 68 byte, trong đó 4 byte cuối sẽ chứa giá trị mong muốn của `target`. Để exploit format0, formatted string sẽ như sau.
 
 ```bash
