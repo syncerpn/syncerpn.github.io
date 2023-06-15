@@ -74,7 +74,7 @@ python -c "print '%064d\xef\xbe\xad\xde'"
 ```
 
 Chuỗi sinh ra từ formatted string này sẽ gồm 64 ký tự như mong muốn (bản chất là dang số nguyên với các số 0 phía trước) và 4 byte cuối là 4 byte cần cho `target`.
-Sau đây là bộ nhớ bắt đầu từ `esp`. Phân biệt theo màu <span style="color:springgreen">tham số sẽ dùng cho hàm `sprintf`</span>, <span style="color:aqua">buffer</span> và <span style="color:orangered">target</span>.
+Sau đây là bộ nhớ bắt đầu từ `esp`. Phân biệt theo màu <span style="color:springgreen">tham số sẽ dùng cho hàm sprintf</span>, <span style="color:aqua">buffer</span> và <span style="color:orangered">target</span>.
 
 <pre class="memory">
 0xbffff700:     <span style="color:springgreen">0xbffff71c</span>      <span style="color:springgreen">0xbffff978</span>      <span style="color:springgreen">0x080481e8</span>      0xbffff798
