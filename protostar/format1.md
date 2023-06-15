@@ -1,6 +1,6 @@
 ---
 layout: post
-title: format0
+title: format1
 ---
 
 Trong bài này, chúng ta sẽ dùng `printf` để exploit chương trình.
