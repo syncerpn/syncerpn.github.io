@@ -6,7 +6,7 @@ title: format1
 Trong bài này, chúng ta sẽ dùng `printf` để exploit chương trình.
 Mặc dù `printf` chỉ là hàm để in ra màn hình, nó vẫn có khả năng đọc và lưu giá trị vào bộ nhớ thông qua formatted string có chứa `%n`.
 
-Sau đây là source code và asm code của chương trình format0.
+Sau đây là source code và asm code của chương trình format1.
 
 ```c
 #include <stdlib.h>
