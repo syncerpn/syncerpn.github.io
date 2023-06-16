@@ -95,10 +95,11 @@ python -c 'print "\xf4\x96\x04\x08" + "%16930112x" + "%12$n"'
 
 Ta cũng có thể ghi từng byte thành phần như sau.
 Đầu tiên, cần tách giá trị `0x01025544` thành:
-- `0x01` lưu vào `0x080496f7`
-- `0x02` lưu vào `0x080496f6`
-- `0x55` lưu vào `0x080496f5`
-- `0x44` lưu vào `0x080496f4`
+* `0x01` lưu vào `0x080496f7`
+* `0x02` lưu vào `0x080496f6`
+* `0x55` lưu vào `0x080496f5`
+* `0x44` lưu vào `0x080496f4`
+
 Tuy nhiên, thứ tự lưu cần được lưu ý, vì mỗi lần lưu vào địa chỉ `0xY` thì 4 byte từ `0xY` đến `0xY + 3` sẽ bị thay đổi theo.
 Ví dụ nếu ta lưu `0x01` vào `0x080496f7`, ta sẽ được giá trị của `target` như sau.
 <pre class="memory">
@@ -112,9 +113,10 @@ Sau đó, ta lưu `0x02` vào `0x080496f6` thì giá trị tại `0x080496f7` s�
 Lưu ý thứ 2 đó là chúng ta không thể giảm giá trị sẽ được lưu khi lệnh `printf` tiếp diễn.
 Cụ thể, vì bản chất của `printf` kết hợp với `%n` là ghi số lượng ký tự đã được in ra màn hình, giá trị được lưu với `%n` chỉ tăng dần theo thời gian cho đến khi `printf` kết thúc.
 Do vậy, đối với bài này, chúng ta có thể ghi theo trình tự như sau.
-- `0x44` lưu vào `0x080496f4`
-- `0x55` lưu vào `0x080496f5`
-- `0x0102` lưu vào `0x080496f6`
+* `0x44` lưu vào `0x080496f4`
+* `0x55` lưu vào `0x080496f5`
+* `0x0102` lưu vào `0x080496f6`
+
 Với cách ghi này, ta cần xây dựng formatted string có cả 3 địa chỉ trên.
 Rất may, với 3 địa chỉ này ở đầu formatted string, chúng ta chỉ tiêu tốn 12 ký tự in ra, nhỏ hơn giá trị 68 (hay `0x44`) cho lần ghi đầu tiên.
 Ta cần in ra thêm 56 ký tự khác với `%x`.
