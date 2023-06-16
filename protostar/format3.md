@@ -4,7 +4,7 @@ title: format3
 ---
 
 Trong bài này, chúng ta sẽ tiếp tục dùng `printf` với `%n` một cách linh hoạt hơn.
-Thay vì chỉ ghi một giá 4 byte, chúng ta có thể dùng `printf` để ghi từng thành phần byte
+Thay vì chỉ ghi một giá 4 byte, chúng ta có thể dùng `printf` để ghi từng thành phần byte.
 
 Sau đây là source code và asm code của chương trình format3.
 
