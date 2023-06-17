@@ -133,7 +133,7 @@ Bộ nhớ tại thời điêm trước sau khi `malloc` biến sẽ như sau.
 
 Hai địa chỉ tương ứng này là `0x0804a018` và `0x0804a038`.
 Với kiểu layout này, lần chạy `strcpy` đầu tiên ta có thể lưu tràn từ địa chỉ của `i1->name` tại `0x0804a018` qua vị trí lưu `name` trên biến `i2` là `0x0804a02c`.
-Như vậy, tham số đầu tiên của chương trình sẽ cần 24 byte, trong đó 20 byte đầu để làm phần đệm và 4 byte cuối chưa địa chỉ của `puts` trên bảng lookup symbol `got.plt`.
+Như vậy, tham số đầu tiên của chương trình sẽ cần 24 byte, trong đó 20 byte đầu để làm phần đệm và 4 byte cuối chứa địa chỉ của `puts` trên bảng lookup symbol `got.plt`.
 Sau đây là vị trí trên bộ nhớ. Phân biệt theo màu với <span style="color:yellow">địa chỉ lệnh gọi đến symbol puts@plt</span>, <span style="color:orangered">địa chỉ chứa symbol puts@plt trên bảng got.plt</span>, và <span style="color:fuchsia">địa chỉ thực của puts@plt, cần thay thế bằng địa chi của winner</span>.
 <pre class="memory">
 0x8048561 <main+168>    call   <span style="color:yellow">0x80483cc <puts@plt></span>
