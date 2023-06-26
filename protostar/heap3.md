@@ -154,7 +154,7 @@ Pointer `FD` sẽ có giá là `0x0804b11c`. Khi gán giá trị của `BK` vào
 Điều này tương đương `FD->bk = FD + 0x0c` hay `0x0804b11c + 0x0c = 0x0804b128`, và giá trị được lưu vào đây là `BK = 0x0804c008`.
 Tương tự với `BK`. Khi gán giá trị của `FD` vào `BK->fd`, trước tiên, ta tính được địa chỉ của `BK->fd = 0x0804c008 + 0x08 = 0x0804c010`.
 Offset cho `->fd` là 8 byte. Giá trị lưu vào địa chỉ này sẽ là `0x0804b11c`.
-Sau hai bước này, bộ nhớ sẽ chuyển thành như sau. Các thông tin được xử lý được <span style="color:springgreen">highlight</span>.
+Sau hai bước này, bộ nhớ sẽ chuyển thành như sau. Các thay đổi được highlight.
 
 <pre class="memory">
 0x804c000:      0x00000000      0x00000029      0x90909090      0x90909090
@@ -162,18 +162,23 @@ Sau hai bước này, bộ nhớ sẽ chuyển thành như sau. Các thông tin 
 0x804c020:      0x00000000      0x00000000      0x00000000      0x00000029
 0x804c030:      0x42424242      0x42424242      0x42424242      0x42424242
 0x804c040:      0x42424242      0x42424242      0x42424242      0x42424242
-0x804c050:      0x42424242      <span style="color:springgreen">0x00000061</span>      <span style="color:springgreen">0x0804b194</span>      <span style="color:springgreen">0x0804b194</span>
+0x804c050:      0x42424242      <span style="color:aqua">0x00000061</span>      <span style="color:orangered">0x0804b194</span>      <span style="color:orangered">0x0804b194</span>
 0x804c060:      0x43434343      0x43434343      0x43434343      0x43434343
 0x804c070:      0x43434343      0x43434343      0x43434343      0x43434343
 0x804c080:      0x43434343      0x43434343      0x43434343      0x43434343
 0x804c090:      0x43434343      0x43434343      0x43434343      0x43434343
 0x804c0a0:      0x43434343      0x43434343      0x43434343      0x43434343
-0x804c0b0:      <span style="color:springgreen">0x00000060</span>      0xfffffffc      0xfffffffc      0x0804b11c
+0x804c0b0:      <span style="color:aqua">0x00000060</span>      0xfffffffc      0xfffffffc      0x0804b11c
 0x804c0c0:      0x0804c008      0x00000000      0x00000000      0x00000000
 0x804c0d0:      0x00000000      0x00000000      0x00000000      0x00000000
 0x804c0e0:      0x00000000      0x00000000      0x00000000      0x00000000
 0x804c0f0:      0x00000000      0x00000000      0x00000000      0x00000000
+...
+0x804b11c <_GLOBAL_OFFSET_TABLE_+52>:   0x08048766      0x08048776      0x08048786      <span style="color:springgreen">0x0804c008</span>
+0x804b12c <_GLOBAL_OFFSET_TABLE_+68>:   0x080487a6      0x00000000      0x00000000      0x00000000
 </pre>
+
+
 
 ==============================xx
 Với flow này, ta kiểm tra chương trình, <span style="color:springgreen">thông tin</span> và <span style="color:aqua">nhập vào</span>, theo từng bước như sau.
