@@ -186,7 +186,8 @@ Cụ thể, `prev_size` được gán giá trị `0x60`.
 
 Tiếp nữa, khối đang xét trở thành một khối trống nên 2 dword sau meta data của nó cũng được thay đổi cho phù hợp như <span style="color:orangered">highlight</span>.
 2 vị trí này nằm ở địa chỉ `0x0804c058` và `0x0804c05c`.
-Tại sao chúng được đặt thành `0x0804b194` thì mình chưa rõ!
+
+Tại sao chúng được đặt thành `0x0804b194` thì mình chưa rõ! Giá trị này có vẻ là head của double linked list dùng để lưu vị trí heap đã free.
 
 ```bash
 user@protostar:~$ heap2
