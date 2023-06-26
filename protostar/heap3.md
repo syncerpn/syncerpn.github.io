@@ -178,54 +178,15 @@ Sau hai bước này, bộ nhớ sẽ chuyển thành như sau. Các thay đổi
 0x804b12c <_GLOBAL_OFFSET_TABLE_+68>:   0x080487a6      0x00000000      0x00000000      0x00000000
 </pre>
 
+Có thể thấy, ngoài thay đổi về giá trị được lưu sau `unlink`, chúng ta còn có thay đổi về `size` của khối được free, <span style="color:aqua">highlight</span>. `size` mới được tính bằng giá trị cũ cộng thêm `size` của khối liền sau.
+Với ví dụ trên, `size` mới là `0x64 - 0x04 = 0x60`. Lưu ý, bit cuối vẫn được đặt là 1, nên giá trị lưu ở `size` là `0x61`.
+Sau khi `unlink` thì khối đang xét cũng trở thành khối liên trước của khối liền sau của khối liền sau nó.
+`prev_size` của khối liền sau của khối liền sau lúc này cũng được cập nhật bằng với `size` của khối đang xét.
+Cụ thể, `prev_size` được gán giá trị `0x60`.
 
-
-==============================xx
-Với flow này, ta kiểm tra chương trình, <span style="color:springgreen">thông tin</span> và <span style="color:aqua">nhập vào</span>, theo từng bước như sau.
-
-<pre class="memory">
-<span style="color:springgreen">[ auth = (nil), service = (nil) ]</span>
-<span style="color:aqua">auth abcd</span>
-<span style="color:springgreen">[ auth = 0x804c008, service = (nil) ]</span>
-<span style="color:aqua">service 1</span>
-<span style="color:springgreen">[ auth = 0x804c008, service = 0x804c018 ]</span>
-</pre>
-
-
-<pre class="memory">
-<span style="color:springgreen">[ auth = (nil), service = (nil) ]</span>
-<span style="color:aqua">auth abcd</span>
-<span style="color:springgreen">[ auth = 0x804c008, service = (nil) ]</span>
-<span style="color:aqua">reset</span>
-<span style="color:springgreen">[ auth = 0x804c008, service = (nil) ]</span>
-<span style="color:aqua">service 1</span>
-<span style="color:springgreen">[ auth = 0x804c008, service = 0x804c008 ]</span>
-</pre>
-
-
-<pre class="memory">
-<span style="color:springgreen">[ auth = (nil), service = (nil) ]</span>
-<span style="color:aqua">auth abcd</span>
-<span style="color:springgreen">[ auth = 0x804c008, service = (nil) ]</span>
-<span style="color:aqua">reset</span>
-<span style="color:springgreen">[ auth = 0x804c008, service = (nil) ]</span>
-<span style="color:aqua">service 11112222333344441</span>
-<span style="color:springgreen">[ auth = 0x804c008, service = 0x804c018 ]</span>
-<span style="color:aqua">login</span>
-<span style="color:springgreen">you have logged in already!</span>
-<span style="color:springgreen">[ auth = 0x804c008, service = 0x804c018 ]</span>
-</pre>
-
-```bash
-user@protostar:~$ heap2
-[ auth = (nil), service = (nil) ]
-auth abcd
-[ auth = 0x804c008, service = (nil) ]
-reset
-[ auth = 0x804c008, service = (nil) ]
-servic 1111222233
-[ auth = 0x804c008, service = 0x804c008 ]
-```
+Tiếp nữa, khối đang xét trở thành một khối trống nên 2 dword sau meta data của nó cũng được thay đổi cho phù hợp như <span style="color:orangered">highlight</span>.
+2 vị trí này nằm ở địa chỉ `0x0804c058` và `0x0804c05c`.
+Tại sao chúng được đặt thành `0x0804b194` thì mình chưa rõ!
 
 ```bash
 user@protostar:~$ heap2
