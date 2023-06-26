@@ -98,32 +98,58 @@ int main(int argc, char **argv)
 0x0804893b <main+178>:  ret
 ```
 
-Mục tiêu là thay đổi giá trị `auth` trong một biến có type là struct `auth`.
-Chương trình heap2 sẽ làm những việc sau đây.
+Bộ nhớ ngay trước lệnh `free` đầu tiên.
+Địa chỉ được `free` là `0x0804c058`. Do đó, khối sẽ được `free` có địa chỉ là `0x0804c050`.
+Lúc nào, `0x0804c050` chứa `prev_size`, `0x0804c054` chứa `size`, và `0x0804c058` chứa data.
 
-1. Chạy một vòng loop vô hạn
-2. Mỗi lượt, chương trình sẽ đọc lệnh do người dùng nhập vào stdin. Ta có cách lệnh:
-* auth <string>
-* reset
-* service <stirng>
-* login
-3. Khi một lệnh được nhập vào, chương trình sẽ thực hiện một chuỗi lệnh khác nhau.
+<pre class="memory">
+0x804c000:      0x00000000      0x00000029      0x90909090      0x90909090
+0x804c010:      0x90909090      0x90909090      0x00000000      0x00000000
+0x804c020:      0x00000000      0x00000000      0x00000000      0x00000029
+0x804c030:      0x42424242      0x42424242      0x42424242      0x42424242
+0x804c040:      0x42424242      0x42424242      0x42424242      0x42424242
+0x804c050:      0x42424242      0x00000065      0x43434343      0x43434343
+0x804c060:      0x43434343      0x43434343      0x43434343      0x43434343
+0x804c070:      0x43434343      0x43434343      0x43434343      0x43434343
+0x804c080:      0x43434343      0x43434343      0x43434343      0x43434343
+0x804c090:      0x43434343      0x43434343      0x43434343      0x43434343
+0x804c0a0:      0x43434343      0x43434343      0x43434343      0x43434343
+0x804c0b0:      0x43434343      0xfffffffc      0xfffffffc      0x0804b11c
+0x804c0c0:      0x0804c008      0x00000000      0x00000000      0x00000000
+0x804c0d0:      0x00000000      0x00000000      0x00000000      0x00000000
+0x804c0e0:      0x00000000      0x00000000      0x00000000      0x00000000
+0x804c0f0:      0x00000000      0x00000000      0x00000000      0x00000000
+</pre>
 
-Tuy nhiên cũng cần lưu ý trước là chương trình có khá nhiều bug sau khi đọc asm code so với source code.
-Vì vậy, trước hết, chúng ta sẽ giả định chương trình hoạt động theo đúng "mong muốn" ban đầu và chúng ta sẽ exploit chương trình theo hướng stale pointer.
-Các bug sẽ được đề cập sau.
+Giá trị của `size` là `0x65`, với ý nghĩa là khối này có kích thước `0x64` và khối liền trước đang được sử dụng. Lưu ý, bit cuối mang thông tin của khối liền trước chứ không phải khối hiện tại!
 
-Đối với gợi ý exploit sử dụng stale pointer, ta để ý rằng biến pointer `auth` được `free` khi nhận lệnh reset.
-Tuy nhiên sau khi `free`, biến này vẫn có khả năng được sử dụng nếu người dùng nhập lệnh login.
-Để exploit stale pointer, chúng ta sẽ giả thiết rằng sau khi free, chúng ta vẫn có thể gán lại địa chỉ này cho một biến khác và có thể ghi vào đó.
-Theo đó, ta sẽ chọn flow cho chương trình như sau.
+Khi `free` được gọi, vì khối liền trước đang được sử dụng, sẽ không có `unlink` được gọi cho khối đó.
+Hàm `free` sẽ tiếp tục kiểm tra khối liền sau. Để biết được khối liền sau có đang được dùng không, hàm này sẽ tìm đến khối liền sau của khối liền sau.
 
-1. Khởi tạo địa chỉ cho `auth` qua `malloc`. Việc này được thực hiện qua lệnh auth
-2. Free địa chỉ này, chỉ để trả quyền sử dụng cho một biến khác. Việc này được thực hiện qua lệnh reset
-3. Xin cấp lại một địa chỉ trên heap với mục tiêu lấy lại quyền ghi vào vùng chứa biến int `auth` thuộc struct `auth`. Việc này được thực hiện qua lệnh service. Chúng ta sẽ hy vọng rằng biến mới có địa chỉ nhỏ hơn địa chỉ đến int `auth` trong struct.
-4. Sau khi cấp địa chỉ, ghi một giá trị vào đó để cố gắng làm tràn đến int `auth`.
-5. Dùng lệnh login để kiểm tra mục tiêu.
+Theo đúng thứ tự, khối liền sau sẽ ở địa chỉ `0x0804c050 + 0x64 = 0x0804c0b4` (địa chỉ khối hiện tại, cộng với kích cỡ của chính nó).
+Tại địa chỉ này, meta data của khối là `prev_size` ở `0x0804c0b4`, `size` ở `0x0804c0b8`.
 
+Như vậy, khối liền sau của khối liền sau được tính bằng công thức tương tự: `0x0804c0b4 + 0xfffffffc`.
+Ở đây, do `0xfffffffc` đã overflow, giá trị được cộng vào để tính địa chỉ sẽ là `-0x04`.
+Suy ra, địa chỉ của khối liền sau của khối liền sau là `0x0804c0b4 - 0x04 = 0x0804c0b0`.
+Meta data của khối này là `prev_size` ở `0x0804c0b0`, `size` ở `0x0804c0b4`.
+
+Khi kiểm tra `size` của khối liền sau của khối liền sau này, bit cuối cùng là 0.
+Do vậy, khối liền sau của khối đang xét là khối trống. Theo sau `prev_size` và `size` trong meta data của khối trống sẽ là 2 địa chỉ, 1 là của khối liền sau nó, và 1 là của khối liên trước nó.
+Cụ thể 2 địa chỉ này nằm tại `0x0804c0bc` và `0x0804c0c0` với các giá trị tương ứng là `0x0804b11c` và `0x0804c008`.
+Lúc này, điều kiện của `unlink` đã thỏa mãn nên hàm này sẽ được gọi cho khối liền sau.
+Cụ thể, sau đây là định nghĩa của `unlink`:
+
+```c
+#define unlink(P, BK, FD) { \
+  FD = P->fd;               \
+  BK = P->bk;               \
+  FD->bk = BK;              \
+  BK->fd = FD;              \
+}
+```
+
+==============================xx
 Với flow này, ta kiểm tra chương trình, <span style="color:springgreen">thông tin</span> và <span style="color:aqua">nhập vào</span>, theo từng bước như sau.
 
 <pre class="memory">
@@ -134,9 +160,6 @@ Với flow này, ta kiểm tra chương trình, <span style="color:springgreen">
 <span style="color:springgreen">[ auth = 0x804c008, service = 0x804c018 ]</span>
 </pre>
 
-Ở đoạn ví dụ trên, chúng ta không free `auth` mà tiếp tục xin cấp bộ nhớ trên heap.
-Địa chỉ của `auth` và `service` là `0x804c008` và `0x804c018`, khác nhau.
-Nếu có `free` trước khi xin cấp bộ nhớ cho biến `service`, ta có kết quả như sau.
 
 <pre class="memory">
 <span style="color:springgreen">[ auth = (nil), service = (nil) ]</span>
@@ -148,12 +171,6 @@ Nếu có `free` trước khi xin cấp bộ nhớ cho biến `service`, ta có 
 <span style="color:springgreen">[ auth = 0x804c008, service = 0x804c008 ]</span>
 </pre>
 
-Lúc này, `service` đã lấy lại giá trị cũ của `auth`.
-Hai biến này về cơ bản là có cùng địa chỉ.
-Như vậy thay vì chạy lệnh service 1, ta sẽ vẫn dùng lệnh này nhưng với giá trị nhập vào đủ lớn để ghi được qua vị trí của int `auth` trong `auth`.
-Với struct `auth` và pointer `auth`, ta sẽ phân bố vùng nhớ gồm 32 byte đầu cho `auth->name` và 4 byte sau cho `auth->auth`.
-Như vậy, ta sẽ dùng chuỗi dài ít nhất 33 byte với byte cuối khác `\0` cho lệnh service.
-Như sau là một cách.
 
 <pre class="memory">
 <span style="color:springgreen">[ auth = (nil), service = (nil) ]</span>
@@ -167,18 +184,6 @@ Như sau là một cách.
 <span style="color:springgreen">you have logged in already!</span>
 <span style="color:springgreen">[ auth = 0x804c008, service = 0x804c018 ]</span>
 </pre>
-
-Mục tiêu đã hoàn thành!
-
-Tuy nhiên!
-
-Tuy nhiên, chúng ta thấy chương trình báo rằng `service` thực sự nằm ở `0x804c018` thay vì trùng với `auth` tại `0x804c008`.
-Việc này cùng một số quan sát khác và bug của chương trình, mình sẽ liệt ra như sau.
-
-* Tác giả sử dụng quá nhiều thứ với tên `auth`. Khi đọc bài viết, hẳn các bạn cũng sẽ bị rố. Trong chương trình có struct tên `auth`, trong struct có biến int tên `auth`, và ngoài struct là biến global pointer trên `auth`. Không rõ có phải hay không nhưng do cách đặt tên này làm cả tác giả bị lẫn. Khi xin cấp bộ nhớ cho pointer `auth`, tác giả dùng `sizeof` với struct nhưng thật sự chương trình đã compile thành `sizeof` với biến pointer. Và đúng ra sẽ xin cấp 36 byte bộ nhớ nhưng lại thành cấp 4 byte. Việc này được thể hiện cả trong asm code của chương trình.
-* Một số lệnh được viết khá cẩu thả. Ví dụ như lệnh service. Đúng ra tác giá sẽ muốn dùng `strncmp` với độ dài là 7 ký tự, nhưng chương trình viết thành 6. Do đó, nếu bạn chạy lệnh servic thì điều kiện lệnh vẫn thỏa mãn. Hoặc nếu dùng lệnh service thì ký tự dấu cách sau service cũng được tính để ghi thành chuỗi thay vì làm thành phần lệnh.
-* Với ví dụ cuối cùng, mặc dù đã `free` biến `auth` nhưng khi cấp bộ nhớ, biến `service` vẫn nhận một địa chỉ mới. Mình đã thử và thấy nếu chuỗi đi với lệnh service có trên 12 byte thì `service` sẽ nhận địa chỉ mới.
-* Cũng cần lưu ý rằng nếu nhập lệnh service thì ký tự cuối sẽ là `\0x0a` (line feed) và null-terminated character. Như vậy chỉ cần 10 ký tự theo sau lệnh thì tổng số ký tự sẽ là 12.
 
 ```bash
 user@protostar:~$ heap2
