@@ -187,7 +187,39 @@ Cụ thể, `prev_size` được gán giá trị `0x60`.
 Tiếp nữa, khối đang xét trở thành một khối trống nên 2 dword sau meta data của nó cũng được thay đổi cho phù hợp như <span style="color:orangered">highlight</span>.
 2 vị trí này nằm ở địa chỉ `0x0804c058` và `0x0804c05c`.
 
-Tại sao chúng được đặt thành `0x0804b194` thì mình chưa rõ! Giá trị này có vẻ là head của double linked list dùng để lưu vị trí heap đã free.
+Tại sao chúng được đặt thành `0x0804b194` thì mình chưa rõ! Giá trị này có vẻ là head của double linked list dùng để lưu những vị trí đã được free trên heap.
+
+##Ví dụ 2
+
+Bộ nhớ ngay trước lệnh `free` đầu tiên.
+Địa chỉ được `free` là `0x0804c058`. Do đó, khối sẽ được `free` có địa chỉ là `0x0804c050`.
+Lúc nào, `0x0804c050` chứa `prev_size`, `0x0804c054` chứa `size`, và `0x0804c058` chứa data.
+
+<pre class="memory">
+0x804c000:      0x00000000      0x00000029      0x41414141      0x00000000
+0x804c010:      0x00000000      0x00000000      0x00000000      0x00000000
+0x804c020:      0x00000000      0x00000000      0x00000000      0x00000029
+0x804c030:      0xffffffff      0xffffffff      0xffffffff      0xffffffff
+0x804c040:      0x04886468      0xffffc308      0xffffffff      0xffffffff
+0x804c050:      0xfffffffc      0xfffffffc      0xffffffff      0x0804b11c
+0x804c060:      0x0804c040      0x00000000      0x00000000      0x00000000
+0x804c070:      0x00000000      0x00000000      0x00000000      0x00000f89
+</pre>
+
+Đầu tiên, khối liền trước sẽ được kiểm tra trước.
+Khối này sẽ năm ở vị trí `0x0804c050 - (-0x04) = 0x0804c050 + 0x04 = 0x0804c054`.
+Thêm nữa, khi kiêm tra bit cuối của `size`, ta biết 
+
+<pre class="memory">
+0x804c000:      0x00000000      0x00000029      0x41414141      0x00000000
+0x804c010:      0x00000000      0x00000000      0x00000000      0x00000000
+0x804c020:      0x00000000      0x00000000      0x00000000      0x00000029
+0x804c030:      0xffffffff      0xffffffff      0xffffffff      0xffffffff
+0x804c040:      0x04886468      0xffffc308      0x0804b11c      0xfffffff8
+0x804c050:      0xfffffffc      0xfffffffc      0xfffffff9      0x0804b194
+0x804c060:      0x0804b194      0x00000000      0x00000000      0x00000000
+0x804c070:      0x00000000      0x00000000      0x00000000      0x00000f89
+</pre>
 
 ```bash
 user@protostar:~$ heap2
