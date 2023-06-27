@@ -208,7 +208,24 @@ Lúc nào, `0x0804c050` chứa `prev_size`, `0x0804c054` chứa `size`, và `0x0
 
 Đầu tiên, khối liền trước sẽ được kiểm tra trước.
 Khối này sẽ năm ở vị trí `0x0804c050 - (-0x04) = 0x0804c050 + 0x04 = 0x0804c054`.
-Thêm nữa, khi kiêm tra bit cuối của `size`, ta biết 
+Thêm nữa, bit cuối của `size` là 0 nên ta biết được khối liền trước này đã được free.
+`unlink` sẽ được áp dụng lên khối này, trong đó `0x0804c040` được lưu vào `0x0804b11c + 0x0c = 0x0804b128` và `0x0804b11c` được lưu vào `0x0804c040 + 0x08 = 0x0804c048`.
+Sau khi áp dụng `unlink`, khối liền trước và khối đang xét được nhật `size` và `prev_size`.
+Khối liền trước được coi là đã "nuốt" khối đang xét.
+`size` của khối này được thay đổi thành `(-0x02) + (-0x04) = -0x06 = 0xfffffffa`.
+Bit cuối chứa thông tin của khối liền trước của khối liền trước được giữ nguyên, là 1.
+Do đó, giá trị được lưu lại là `0xfffffffb`.
+
+<pre class="memory">
+0x804c000:      0x00000000      0x00000029      0x41414141      0x00000000
+0x804c010:      0x00000000      0x00000000      0x00000000      0x00000000
+0x804c020:      0x00000000      0x00000000      0x00000000      0x00000029
+0x804c030:      0xffffffff      0xffffffff      0xffffffff      0xffffffff
+0x804c040:      0x04886468      0xffffc308    + 0x0804b11c      0xffffffff
+0x804c050:      0xfffffffc      0xfffffffc    + 0xfffffffb    + 0x0804b194
+0x804c060:    + 0x0804b194      0x00000000      0x00000000      0x00000000
+0x804c070:      0x00000000      0x00000000      0x00000000      0x00000f89
+</pre>
 
 <pre class="memory">
 0x804c000:      0x00000000      0x00000029      0x41414141      0x00000000
