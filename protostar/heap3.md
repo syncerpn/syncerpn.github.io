@@ -191,7 +191,7 @@ Tiếp nữa, khối đang xét trở thành một khối trống nên 2 dword s
 
 Tại sao chúng được đặt thành `0x0804b194` thì mình chưa rõ! Giá trị này có vẻ là head của double linked list dùng để lưu những vị trí đã được free trên heap.
 
-##Ví dụ 2: unlink khối liền trước
+## Ví dụ 2: unlink khối liền trước
 
 Bộ nhớ ngay trước lệnh `free` đầu tiên.
 Địa chỉ được `free` là `0x0804c058`. Do đó, khối sẽ được `free` có địa chỉ là `0x0804c050`.
