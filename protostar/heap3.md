@@ -283,9 +283,9 @@ python -c 'print "BBBB" *  8 + "CCCC" + "\x65"'
 python -c 'print "DDDD" * 23 + "\xfc\xff\xff\xff" + "\xfc\xff\xff\xff" + "\x1c\xb1\x04\x08" + "\x10\xc0\x04\x08"'
 ```
 
-Chúng ta sẽ chọn `size` mới cho khối thứ 3 là 100 byte hay `0x64`. Với bit cuối bằng 1, giá trị cần ghi vào là `0x65`
+Chúng ta sẽ chọn `size` mới cho khối thứ 3 là 100 byte hay `0x64`. Với bit cuối bằng 1, giá trị cần ghi vào là `0x65`.
 Trampoline code sẽ có ở `0x0804c010`. Trampoline code có độ dài 8 byte.
-Bộ nhớ ngay trước lệnh `free` đầu tiên như bên dưới, trong đó đã highlight <span style="color:springgreen">trampoline code</span> và <span style="color:aqua">khối giả thứ 4</span>
+Bộ nhớ ngay trước lệnh `free` đầu tiên như bên dưới, trong đó đã highlight <span style="color:springgreen">trampoline code</span> và <span style="color:aqua">khối giả thứ 4</span>.
 Địa chỉ được `free` là `0x0804c058`. Do đó, khối sẽ được `free` có địa chỉ là `0x0804c050`.
 Lúc này, `0x0804c050` chứa `prev_size`, `0x0804c054` chứa `size`, và `0x0804c058` chứa data.
 
