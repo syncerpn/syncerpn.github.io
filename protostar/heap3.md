@@ -98,6 +98,8 @@ int main(int argc, char **argv)
 0x0804893b <main+178>:  ret
 ```
 
+## Ví dụ 1: unlink khối liền sau
+
 Bộ nhớ ngay trước lệnh `free` đầu tiên.
 Địa chỉ được `free` là `0x0804c058`. Do đó, khối sẽ được `free` có địa chỉ là `0x0804c050`.
 Lúc nào, `0x0804c050` chứa `prev_size`, `0x0804c054` chứa `size`, và `0x0804c058` chứa data.
@@ -178,10 +180,10 @@ Sau hai bước này, bộ nhớ sẽ chuyển thành như sau. Các thay đổi
 0x804b12c <_GLOBAL_OFFSET_TABLE_+68>:   0x080487a6      0x00000000      0x00000000      0x00000000
 </pre>
 
-Có thể thấy, ngoài thay đổi về giá trị được lưu sau `unlink`, chúng ta còn có thay đổi về `size` của khối được free, <span style="color:aqua">highlight</span>. `size` mới được tính bằng giá trị cũ cộng thêm `size` của khối liền sau.
+Có thể thấy, ngoài thay đổi về giá trị được lưu sau `unlink`, chúng ta còn có thay đổi về `size` của khối được free, <span style="color:aqua">highlight</span>. `size` mới được tính bằng `size` của khối đang xét cộng thêm `size` của khối liền sau.
 Với ví dụ trên, `size` mới là `0x64 - 0x04 = 0x60`. Lưu ý, bit cuối vẫn được đặt là 1, nên giá trị lưu ở `size` là `0x61`.
 Sau khi `unlink` thì khối đang xét cũng trở thành khối liên trước của khối liền sau của khối liền sau nó.
-`prev_size` của khối liền sau của khối liền sau lúc này cũng được cập nhật bằng với `size` của khối đang xét.
+`prev_size` của khối liền sau của khối liền sau lúc này cũng được cập nhật bằng với `size` mới.
 Cụ thể, `prev_size` được gán giá trị `0x60`.
 
 Tiếp nữa, khối đang xét trở thành một khối trống nên 2 dword sau meta data của nó cũng được thay đổi cho phù hợp như <span style="color:orangered">highlight</span>.
@@ -189,7 +191,7 @@ Tiếp nữa, khối đang xét trở thành một khối trống nên 2 dword s
 
 Tại sao chúng được đặt thành `0x0804b194` thì mình chưa rõ! Giá trị này có vẻ là head của double linked list dùng để lưu những vị trí đã được free trên heap.
 
-##Ví dụ 2
+##Ví dụ 2: unlink khối liền trước
 
 Bộ nhớ ngay trước lệnh `free` đầu tiên.
 Địa chỉ được `free` là `0x0804c058`. Do đó, khối sẽ được `free` có địa chỉ là `0x0804c050`.
@@ -212,31 +214,24 @@ Thêm nữa, bit cuối của `size` là 0 nên ta biết được khối liền
 `unlink` sẽ được áp dụng lên khối này, trong đó `0x0804c040` được lưu vào `0x0804b11c + 0x0c = 0x0804b128` và `0x0804b11c` được lưu vào `0x0804c040 + 0x08 = 0x0804c048`.
 Sau khi áp dụng `unlink`, khối liền trước và khối đang xét được nhật `size` và `prev_size`.
 Khối liền trước được coi là đã "nuốt" khối đang xét.
-`size` của khối này được thay đổi thành `(-0x02) + (-0x04) = -0x06 = 0xfffffffa`.
+Giá trị `size` mới sẽ được tính bằng `size` và `prev_size` của khối đang xét. Lưu ý `size` của khối liền trước không được tính đến.
+Giá trị mới sẽ là `(-0x04) + (-0x04) = -0x08 = 0xfffffff8`.
 Bit cuối chứa thông tin của khối liền trước của khối liền trước được giữ nguyên, là 1.
-Do đó, giá trị được lưu lại là `0xfffffffb`.
+Do đó, giá trị được lưu lại là `0xfffffff9`.
 
 <pre class="memory">
 0x804c000:      0x00000000      0x00000029      0x41414141      0x00000000
 0x804c010:      0x00000000      0x00000000      0x00000000      0x00000000
 0x804c020:      0x00000000      0x00000000      0x00000000      0x00000029
 0x804c030:      0xffffffff      0xffffffff      0xffffffff      0xffffffff
-0x804c040:      0x04886468      0xffffc308    + 0x0804b11c      0xffffffff
-0x804c050:      0xfffffffc      0xfffffffc    + 0xfffffffb    + 0x0804b194
-0x804c060:    + 0x0804b194      0x00000000      0x00000000      0x00000000
+0x804c040:      0x04886468      0xffffc308      <span style="color:springgreen">0x0804b11c</span>      <span style="color:aqua">0xfffffff8</span>
+0x804c050:      0xfffffffc      0xfffffffc      <span style="color:aqua">0xfffffff9</span>      <span style="color:orangered">0x0804b194</span>
+0x804c060:      <span style="color:orangered">0x0804b194</span>      0x00000000      0x00000000      0x00000000
 0x804c070:      0x00000000      0x00000000      0x00000000      0x00000f89
 </pre>
 
-<pre class="memory">
-0x804c000:      0x00000000      0x00000029      0x41414141      0x00000000
-0x804c010:      0x00000000      0x00000000      0x00000000      0x00000000
-0x804c020:      0x00000000      0x00000000      0x00000000      0x00000029
-0x804c030:      0xffffffff      0xffffffff      0xffffffff      0xffffffff
-0x804c040:      0x04886468      0xffffc308      0x0804b11c      0xfffffff8
-0x804c050:      0xfffffffc      0xfffffffc      0xfffffff9      0x0804b194
-0x804c060:      0x0804b194      0x00000000      0x00000000      0x00000000
-0x804c070:      0x00000000      0x00000000      0x00000000      0x00000f89
-</pre>
+Khối liền sau dù không được `unlink` nhưng `prev_size` của khối này vẫn được cập nhật. Giá trị được cập nhật chính là giá trị `size` mới đã tính phía trên, với bit cuối được đặt về 0.
+Giá trị cụ thể là `0xfffffff8`.
 
 ```bash
 user@protostar:~$ heap2
