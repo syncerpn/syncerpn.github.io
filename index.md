@@ -22,11 +22,10 @@ layout: default
 [werewolf devlog #0](./devlog/discord_game_werewolf_0.html)
 [werewolf devlog #1](./devlog/discord_game_werewolf_1.html)
 
-#Bomblab
+# Bomblab
 
 [setup](./bomblab/setup.html)
 
-|:-|:-|:-|
 | [phase_1](./bomblab/phase_1.html) | [phase_2](./bomblab/phase_2.html) | [phase_3](./bomblab/phase_3.html) |
 | [phase_4](./bomblab/phase_4.html) | [phase_5](./bomblab/phase_5.html) | [phase_6](./bomblab/phase_6.html) |
 | [secret_phase](./bomblab/phase_1.html) | [Bomblab variant](./bomblab/phase_1.html) |  |
