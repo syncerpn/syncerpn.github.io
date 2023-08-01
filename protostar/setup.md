@@ -17,3 +17,4 @@ MobaXterm: [homepage](https://mobaxterm.mobatek.net/download-home-edition.html)
 
 Download và cài VMware Player. Sau đó tạo máy ảo sử dụng Protostar ISO:
 1. Trong VMware Player, chọn "Create a New Virtual Machine"
+(../assets/images/protostar/setup_1.png)
