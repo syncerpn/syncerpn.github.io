@@ -33,7 +33,7 @@ Sử dụng 2 vòng lặp như sau sẽ giải được bài toán với độ p
 def solve_bruteforce(nums: list, target: int) -> list:
 	n = len(nums)
 	for i in range(n-1):
-		for j in range(i, n):
+		for j in range(i+1, n):
 			if nums[i] + nums[j] == target:
 				return [nums[i], nums[j]]
 
