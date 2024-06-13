@@ -15,6 +15,8 @@ Mục tiêu là để học và hiểu về thuật toán, nên chỉ chú trọ
 
 ### Keyword
 
+Keyword được highlight dưới đây là những keyword thông dụng:
+
 <pre class="memory">
 <span style="color:aqua">False</span>     await       <span style="color:aqua">else</span>       import      pass
 <span style="color:aqua">None</span>      <span style="color:aqua">break</span>       except     <span style="color:aqua">in</span>          raise
@@ -24,6 +26,23 @@ as        <span style="color:aqua">def</span>         from       nonlocal    <sp
 assert    del         global     <span style="color:aqua">not</span>         with
 async     <span style="color:aqua">elif</span>        <span style="color:aqua">if</span>         <span style="color:aqua">or</span>          yield
 </pre>
+
+Phân loại keyword
+
+<pre class="memory">
+giá trị boolean và null: None False True
+thư viện và tên thay thế (alias): from import as
+asynchronous: async await
+bắt lỗi: try except raise finally
+logic: and not or is
+iterate: in
+trả về và thoát hàm: pass return yield assert
+code flow: for while continue break if elif else
+định nghĩa hàm, class, và context: def class lambda with
+định nghĩa scope của biến: global nonlocal
+xóa biến: del
+</pre>
+
 
 ```c
 #include <stdlib.h>
