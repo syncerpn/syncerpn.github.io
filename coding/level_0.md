@@ -64,8 +64,8 @@ Type mặc định của Python. Sau đây la một số type thông dụng
 * `list`: định nghĩa bằng `[]`; `list` trong python tương tự array, nhưng có thể chứa đa dạng và lẫn lộn nhiều kiểu phần tử (ví dụ: `[1, "2"]` vừa chứa giá trị `int`, vừa chứa giá trị `str`)
 * `tuple`: tượng tự `list`, nhưng ít sử dụng hơn; có thể hiểu đơn giản là để gom các giá trị thành một cặp/một bộ giá trị
 * `str`: chuỗi ký tự định nghĩa bằng `""` hoặc `''`
-* `set`: định nghĩa bằng `{}`; tương tự `list` nhưng đảm bảo các giá trị trong `set` là duy nhất
 * `dict`: định nghĩa bằng `{}` hoặc `{key: value}`; `dict` trong python là hashtable/map trong nhiều ngôn ngữ khác; được sử dụng rất nhiều
+* `set`: định nghĩa bằng `{value1, value2}`; tương tự `list` nhưng đảm bảo các giá trị trong `set` là duy nhất
 
 ```python
 l = [1, 2, 1.4, "i", "<3", [5, 6]] #a list contains various elements of different types
