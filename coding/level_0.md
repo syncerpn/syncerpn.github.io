@@ -15,34 +15,71 @@ Mục tiêu là để học và hiểu về thuật toán, nên chỉ chú trọ
 
 ### Keyword
 
-Keyword được highlight dưới đây là những keyword thông dụng:
+Phân loại 35 keyword. Highlight nhưng keyword thông dụng
 
 <pre class="memory">
-<span style="color:aqua">False</span>     await       <span style="color:aqua">else</span>       import      pass
-<span style="color:aqua">None</span>      <span style="color:aqua">break</span>       except     <span style="color:aqua">in</span>          raise
-<span style="color:aqua">True</span>      <span style="color:aqua">class</span>       finally    <span style="color:aqua">is</span>          <span style="color:aqua">return</span>
-<span style="color:aqua">and</span>       <span style="color:aqua">continue</span>    <span style="color:aqua">for</span>        lambda      try
-as        <span style="color:aqua">def</span>         from       nonlocal    <span style="color:aqua">while</span>
-assert    del         global     <span style="color:aqua">not</span>         with
-async     <span style="color:aqua">elif</span>        <span style="color:aqua">if</span>         <span style="color:aqua">or</span>          yield
+giá trị boolean và null:            <span style="color:aqua">None</span> <span style="color:aqua">False</span> <span style="color:aqua">True</span>
+thư viện và tên thay thế (alias):   from import as
+asynchronous:                       await
+bắt lỗi:                            try except raise finally
+logic:                              <span style="color:aqua">and</span> <span style="color:aqua">not</span> <span style="color:aqua">or</span> <span style="color:aqua">is</span>
+iterate:                            <span style="color:aqua">in</span>
+trả về và thoát hàm:                <span style="color:aqua">pass</span> <span style="color:aqua">return</span> yield assert
+code flow:                          <span style="color:aqua">for</span> <span style="color:aqua">while</span> <span style="color:aqua">continue</span> <span style="color:aqua">break</span> <span style="color:aqua">if</span> <span style="color:aqua">elif</span> <span style="color:aqua">else</span>
+định nghĩa hàm, class, và context:  <span style="color:aqua">def</span> <span style="color:aqua">class</span> lambda with
+định nghĩa scope của biến:          global nonlocal
+xóa biến:                           del
 </pre>
 
-Phân loại keyword
+### Hàm built-in
+
+Hàm built-in là hàm có thể gọi mà không cần import từ thư viện nào. Sau đây là một số hàm thông dụng
+
+* `abs()`: trả về giá trị tuyệt đối
+* `ascii()`: trả về mã ascii
+* `bin()`: trả về dạng string binary
+* `enumerate()`: iterate chuỗi, trả về cả index và phần tử trong chuỗi
+* `int()`: trả về số `int` của tham số
+* `len()`: trả về độ dài chuỗi/string/iterable
+* `list()`: convert tham số, trả về `list`
+* `max()`: trả về giá trị lớn nhất của một `list`
+* `min()`: trả về giá trị nhỏ nhất của một `list`
+* `ord()`: trả về mã ascii dạng số
+* `print()`: in ra màn hình
+* `range()`: iterate một khoảng (tham số a đến tham số b)
+* `set()`: convert tham số, trả về `set`
+* `sorted()`: sort và trả về kết quả đã sort
+* `str()`: trả về dạng chuỗi của tham số
+* `sum()`: trả về tổng tất cả phần tử của `list`/iterable
+* `tuple()`: trả về dang tuple của tham số
+* `zip()`: dùng để iterate nhiều `list`/iterable một lúc
+
+### Type built-in
+
+Type mặc định của Python. Sau đây la một số type thông dụng
+
+* `int`: trong python, số bit ko giới hạn
+* `float`
+* `bool`: chỉ có `True` hoặc `False`
+* `list`: định nghĩa bằng `[]`; `list` trong python tương tự array, nhưng có thể chứa đa dạng và lẫn lộn nhiều kiểu phần tử (ví dụ: `[1, "2"]` vừa chứa giá trị `int`, vừa chứa giá trị `str`)
+* `tuple`: tượng tự `list`, nhưng ít sử dụng hơn; có thể hiểu đơn giản là để gom các giá trị thành một cặp/một bộ giá trị
+* `str`: chuỗi ký tự định nghĩa bằng `""` hoặc `''`
+* `set`: định nghĩa bằng `{}`; tương tự `list` nhưng đảm bảo các giá trị trong `set` là duy nhất
+* `dict`: định nghĩa bằng `{ : }`; `dict` trong python là hashtable/map trong nhiều ngôn ngữ khác; được sử dụng rất nhiều
 
 <pre class="memory">
-giá trị boolean và null: None False True
-thư viện và tên thay thế (alias): from import as
-asynchronous: async await
-bắt lỗi: try except raise finally
-logic: and not or is
-iterate: in
-trả về và thoát hàm: pass return yield assert
-code flow: for while continue break if elif else
-định nghĩa hàm, class, và context: def class lambda with
-định nghĩa scope của biến: global nonlocal
-xóa biến: del
+giá trị boolean và null:            <span style="color:aqua">None</span> <span style="color:aqua">False</span> <span style="color:aqua">True</span>
+thư viện và tên thay thế (alias):   from import as
+asynchronous:                       await
+bắt lỗi:                            try except raise finally
+logic:                              <span style="color:aqua">and</span> <span style="color:aqua">not</span> <span style="color:aqua">or</span> <span style="color:aqua">is</span>
+iterate:                            <span style="color:aqua">in</span>
+trả về và thoát hàm:                <span style="color:aqua">pass</span> <span style="color:aqua">return</span> yield assert
+code flow:                          <span style="color:aqua">for</span> <span style="color:aqua">while</span> <span style="color:aqua">continue</span> <span style="color:aqua">break</span> <span style="color:aqua">if</span> <span style="color:aqua">elif</span> <span style="color:aqua">else</span>
+định nghĩa hàm, class, và context:  <span style="color:aqua">def</span> <span style="color:aqua">class</span> lambda with
+định nghĩa scope của biến:          global nonlocal
+xóa biến:                           del
 </pre>
-
 
 ```c
 #include <stdlib.h>
