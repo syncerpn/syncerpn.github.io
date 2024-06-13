@@ -4,7 +4,7 @@ layout: default
 
 # Coding
 
-| [level_0](./coding/level_0.html) |  |
+| [level_0](./coding/level_0.html) | [level_1](./coding/level_1.html) |
 
 # Protostar
 
