@@ -56,7 +56,7 @@ Các bước giải bằng bruteforce được giải thích như sau:
 * `nums[i]` và `nums[j]` chỉ là lấy giá trị từ đầu vào, không tốn thêm bộ nhớ
 * Như vậy, tổng số lượng bộ nhớ cần thêm chỉ là 1
 * Dù số lượng phần tử trong `nums` có tăng lên vô hạn, thuật toán vẫn chỉ cần 1 biến
-Khi độ phức tạp của thuật toán không phụ thuộc vào độ phức tạp của đầu vào, ta coi độ phức tạp của thuật toán là `O(1)`
+* Khi độ phức tạp của thuật toán không phụ thuộc vào độ phức tạp của đầu vào, ta coi độ phức tạp của thuật toán là `O(1)`
 
 #### Phương pháp hashtable/hashmap
 
@@ -93,7 +93,7 @@ Các bước giải bằng hashmap được giải thích như sau:
 Độ phức tạp tài nguyên `O(n)` có thể được giải thích như sau:
 * Cần 1 biến `d` có kích cỡ phụ thuộc vào kích cỡ của đầu vào; do đó, độ phức tạp sẽ là `O(n)`
 * Các bước còn lại không phát sinh thêm biến cần lưu
-Tổng kết lại, độ phức tạp là `O(n)`
+* Tổng kết lại, độ phức tạp là `O(n)`
 
 ### Các độ phức tạp thường gặp (từ thấp đến cao)
 
